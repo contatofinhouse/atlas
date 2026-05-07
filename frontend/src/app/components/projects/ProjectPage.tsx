@@ -153,7 +153,7 @@ function DocVersionHistory({
                 <div className={`sticky left-8 z-[60] ${NAME_COL_W} bg-gray-50/60 p-2`}>
                     <div className="flex items-center gap-2">
                         <Loader2 className="h-3 w-3 animate-spin text-gray-400" />
-                        <span>Loading versions…</span>
+                        <span>Carregando versões…</span>
                     </div>
                 </div>
             </div>
@@ -165,7 +165,7 @@ function DocVersionHistory({
                 <div className={`sticky left-0 z-[60] ${CHECK_W} bg-gray-50/60 self-stretch`} />
                 <div className={`sticky left-8 z-[60] ${NAME_COL_W} bg-gray-50/60 p-2`}>
                     <div>
-                        No version history.
+                        Sem histórico de versões.
                     </div>
                 </div>
             </div>
@@ -238,7 +238,7 @@ function DocVersionHistory({
                                         setEditingVersionId(v.id);
                                         setEditingValue(v.display_name ?? "");
                                     }}
-                                    title="Rename version"
+                                    title="Renomear versão"
                                     className="shrink-0 rounded p-0.5 text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-700 hover:bg-gray-200 transition"
                                 >
                                     <Pencil className="h-3 w-3" />
@@ -258,7 +258,7 @@ function DocVersionHistory({
                                     e.stopPropagation();
                                     onDownloadVersion(docId, v.id, filename);
                                 }}
-                                title="Download this version"
+                                title="Baixar esta versão"
                                 className="flex items-center justify-center w-6 h-6 rounded text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
                             >
                                 <Download className="h-3.5 w-3.5" />
@@ -771,7 +771,7 @@ export function ProjectPage({ projectId }: Props) {
         );
         if (blocked > 0) {
             setOwnerOnlyAction(
-                `delete ${blocked} of the selected documents — only the document creator can delete a document`,
+                `excluir ${blocked} dos documentos selecionados — apenas o criador pode excluir um documento`,
             );
         }
     }
@@ -789,7 +789,7 @@ export function ProjectPage({ projectId }: Props) {
         setChats((prev) => prev.filter((c) => !owned.includes(c.id)));
         if (blocked > 0) {
             setOwnerOnlyAction(
-                `delete ${blocked} of the selected chats — only the chat creator can delete a chat`,
+                `excluir ${blocked} dos chats selecionados — apenas o criador pode excluir um chat`,
             );
         }
     }
@@ -807,7 +807,7 @@ export function ProjectPage({ projectId }: Props) {
         setProjectReviews((prev) => prev.filter((r) => !owned.includes(r.id)));
         if (blocked > 0) {
             setOwnerOnlyAction(
-                `delete ${blocked} of the selected reviews — only the review creator can delete a review`,
+                `excluir ${blocked} das análises selecionadas — apenas o criador pode excluir uma análise`,
             );
         }
     }
@@ -867,7 +867,7 @@ export function ProjectPage({ projectId }: Props) {
                         <input
                             autoFocus
                             className="flex-1 min-w-0 text-sm text-gray-800 bg-transparent outline-none border-b border-gray-300"
-                            placeholder="Folder name"
+                            placeholder="Nome da pasta"
                             value={newFolderName}
                             onChange={(e) => setNewFolderName(e.target.value)}
                             onKeyDown={(e) => {
@@ -1117,7 +1117,7 @@ export function ProjectPage({ projectId }: Props) {
             <div className="flex-1 overflow-y-auto bg-white">
                 <div className="flex items-start justify-between px-8 py-4">
                     <div className="flex items-center gap-1.5 text-2xl font-medium font-serif">
-                        <span className="text-gray-400">Projects</span>
+                        <span className="text-gray-400">Projetos</span>
                         <span className="text-gray-300">›</span>
                         <div className="h-6 w-40 rounded bg-gray-100 animate-pulse" />
                     </div>
@@ -1154,7 +1154,7 @@ export function ProjectPage({ projectId }: Props) {
     if (!project) {
         return (
             <div className="flex h-full items-center justify-center">
-                <p className="text-gray-400">Project not found</p>
+                <p className="text-gray-400">Projeto não encontrado</p>
             </div>
         );
     }
@@ -1188,7 +1188,7 @@ export function ProjectPage({ projectId }: Props) {
                 onClick={() => setActionsOpen((v) => !v)}
                 className="flex items-center gap-1 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors"
             >
-                Actions
+                Ações
                 <ChevronDown className="h-3.5 w-3.5" />
             </button>
             {actionsOpen && (
@@ -1198,7 +1198,7 @@ export function ProjectPage({ projectId }: Props) {
                             onClick={handleDownloadSelectedDocs}
                             className="w-full px-3 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                         >
-                            Download
+                            Baixar
                         </button>
                     )}
                     {tab === "documents" && selectedDocIds.some((id) => docs.find((d) => d.id === id)?.folder_id != null) && (
@@ -1206,14 +1206,14 @@ export function ProjectPage({ projectId }: Props) {
                             onClick={handleRemoveSelectedFromFolder}
                             className="w-full px-3 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                         >
-                            Remove from subfolder
+                            Remover da subpasta
                         </button>
                     )}
                     <button
                         onClick={handleDeleteSelected}
                         className="w-full px-3 py-1.5 text-left text-xs text-red-600 hover:bg-red-50 transition-colors"
                     >
-                        Delete
+                        Excluir
                     </button>
                 </div>
             )}
@@ -1230,14 +1230,14 @@ export function ProjectPage({ projectId }: Props) {
                         className="flex items-center gap-1 text-xs px-3 font-medium text-gray-500 hover:text-gray-700 transition-colors"
                     >
                         <FolderPlus className="h-3.5 w-3.5" />
-                        Add Subfolder
+                        Adicionar Subpasta
                     </button>
                     <button
                         onClick={() => setAddDocsOpen(true)}
                         className="flex items-center gap-1 text-xs px-3 font-medium text-gray-500 hover:text-gray-700 transition-colors"
                     >
                         <Upload className="h-3.5 w-3.5" />
-                        Add Documents
+                        Adicionar Documentos
                     </button>
                 </>
             )}
@@ -1254,7 +1254,7 @@ export function ProjectPage({ projectId }: Props) {
                             onClick={() => router.push("/projects")}
                             className="text-gray-400 hover:text-gray-600 transition-colors"
                         >
-                            Projects
+                            Projetos
                         </button>
                         <span className="text-gray-300">›</span>
                         {tab !== "documents" ? (
@@ -1275,18 +1275,18 @@ export function ProjectPage({ projectId }: Props) {
                         {tab !== "documents" && (
                             <>
                                 <span className="text-gray-300">›</span>
-                                <span className="text-gray-900">{tab === "assistant" ? "Assistant" : "Tabular Reviews"}</span>
+                                <span className="text-gray-900">{tab === "assistant" ? "Assistente" : "Análises Tabulares"}</span>
                             </>
                         )}
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <HeaderSearchBtn value={search} onChange={setSearch} placeholder="Search…" />
+                    <HeaderSearchBtn value={search} onChange={setSearch} placeholder="Buscar…" />
                     <button
                         onClick={() => setPeopleModalOpen(true)}
                         className="flex h-8 w-8 items-center justify-center text-sm text-gray-500 transition-colors hover:text-gray-900 cursor-pointer"
-                        title="People with access"
-                        aria-label="People with access"
+                        title="Pessoas com acesso"
+                        aria-label="Pessoas com acesso"
                     >
                         <Users className="h-4 w-4" />
                     </button>
@@ -1313,7 +1313,7 @@ export function ProjectPage({ projectId }: Props) {
                         </button>
                         {docs.length === 0 && (
                             <div className="pointer-events-none absolute right-0 top-full mt-1.5 z-10 hidden group-hover:flex items-center whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs text-white shadow-lg">
-                                Upload a document first
+                                Faça upload de um documento primeiro
                             </div>
                         )}
                     </div>
@@ -1322,9 +1322,9 @@ export function ProjectPage({ projectId }: Props) {
 
             <ToolbarTabs
                 tabs={[
-                    { id: "documents", label: "Documents" },
-                    { id: "assistant", label: "Assistant" },
-                    { id: "reviews", label: "Tabular Reviews" },
+                    { id: "documents", label: "Documentos" },
+                    { id: "assistant", label: "Assistente" },
+                    { id: "reviews", label: "Análises Tabulares" },
                 ]}
                 active={tab}
                 onChange={handleTabChange}
@@ -1357,13 +1357,13 @@ export function ProjectPage({ projectId }: Props) {
                                 />
                             </div>
                             <div className={`sticky left-8 z-[60] ${NAME_COL_W} bg-white pl-2 text-left`}>
-                                Name
+                                Nome
                             </div>
-                            <div className="ml-auto w-20 shrink-0 text-left">Type</div>
-                            <div className="w-24 shrink-0 text-left">Size</div>
-                            <div className="w-20 shrink-0 text-left">Version</div>
-                            <div className="w-32 shrink-0 text-left">Created</div>
-                            <div className="w-32 shrink-0 text-left">Updated</div>
+                            <div className="ml-auto w-20 shrink-0 text-left">Tipo</div>
+                            <div className="w-24 shrink-0 text-left">Tamanho</div>
+                            <div className="w-20 shrink-0 text-left">Versão</div>
+                            <div className="w-32 shrink-0 text-left">Criado em</div>
+                            <div className="w-32 shrink-0 text-left">Atualizado em</div>
                             <div className="w-8 shrink-0" />
                         </div>
 
@@ -1380,7 +1380,7 @@ export function ProjectPage({ projectId }: Props) {
                                 className="flex-1 flex cursor-pointer flex-col items-center justify-center py-24 text-center"
                             >
                                 <Upload className="h-8 w-8 text-gray-200 mb-3" />
-                                <p className="text-sm text-gray-400">Drop PDF or DOCX files here</p>
+                                <p className="text-sm text-gray-400">Arraste arquivos PDF ou DOCX aqui</p>
                             </div>
                         ) : (
                             <div
@@ -1525,7 +1525,7 @@ export function ProjectPage({ projectId }: Props) {
                                     }}
                                 >
                                     <FolderPlus className="h-3.5 w-3.5 text-gray-400" />
-                                    {contextMenu.showFolderActions ? "New subfolder inside" : "New subfolder"}
+                                    {contextMenu.showFolderActions ? "Nova subpasta aqui" : "Nova subpasta"}
                                 </button>
                                 {contextMenu.showFolderActions && contextMenu.folderId && (
                                     <>
@@ -1538,7 +1538,7 @@ export function ProjectPage({ projectId }: Props) {
                                                 setContextMenu(null);
                                             }}
                                         >
-                                            Rename folder
+                                            Renomear pasta
                                         </button>
                                         <button
                                             className="w-full px-3 py-1.5 text-left text-red-600 hover:bg-red-50"
@@ -1547,7 +1547,7 @@ export function ProjectPage({ projectId }: Props) {
                                                 setContextMenu(null);
                                             }}
                                         >
-                                            Delete folder
+                                            Excluir pasta
                                         </button>
                                     </>
                                 )}
@@ -1577,16 +1577,16 @@ export function ProjectPage({ projectId }: Props) {
                             <div className={`sticky left-8 z-[60] ${NAME_COL_W} bg-white pl-2 text-left`}>
                                 Chats
                             </div>
-                            <div className="ml-auto w-32 shrink-0 text-left">Created</div>
+                            <div className="ml-auto w-32 shrink-0 text-left">Criado em</div>
                             <div className="w-8 shrink-0" />
                         </div>
                         {chats.length === 0 ? (
                             <div className="flex flex-col items-start py-24 w-full max-w-xs mx-auto">
                                 <MessageSquare className="h-8 w-8 text-gray-300 mb-4" />
-                                <p className="text-2xl font-medium font-serif text-gray-900">Assistant</p>
-                                <p className="mt-1 text-xs text-gray-400 max-w-xs">Ask questions and get answers grounded in the documents in this project.</p>
+                                <p className="text-2xl font-medium font-serif text-gray-900">Assistente</p>
+                                <p className="mt-1 text-xs text-gray-400 max-w-xs">Faça perguntas e obtenha respostas baseadas nos documentos deste projeto.</p>
                                 <button onClick={() => handleNewChat()} className="mt-4 inline-flex items-center gap-1 rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white hover:bg-gray-700 transition-colors shadow-md">
-                                    + Create New
+                                    + Novo Chat
                                 </button>
                             </div>
                         ) : (
@@ -1604,7 +1604,7 @@ export function ProjectPage({ projectId }: Props) {
                                             {renamingChatId === chat.id ? (
                                                 <input autoFocus value={renameChatValue} onChange={(e) => setRenameChatValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submitChatRename(chat.id); if (e.key === "Escape") setRenamingChatId(null); }} onBlur={() => submitChatRename(chat.id)} onClick={(e) => e.stopPropagation()} className="w-full text-sm text-gray-800 bg-transparent outline-none" />
                                             ) : (
-                                                <span className="text-sm text-gray-800 truncate block">{chat.title ?? "Untitled Chat"}</span>
+                                                <span className="text-sm text-gray-800 truncate block">{chat.title ?? "Chat sem título"}</span>
                                             )}
                                         </div>
                                         <div className="ml-auto w-32 shrink-0 text-sm text-gray-500 truncate">{formatDate(chat.created_at)}</div>
@@ -1615,7 +1615,7 @@ export function ProjectPage({ projectId }: Props) {
                                                         setOwnerOnlyAction("rename this chat");
                                                         return;
                                                     }
-                                                    setRenameChatValue(chat.title ?? "Untitled Chat");
+                                                    setRenameChatValue(chat.title ?? "Chat sem título");
                                                     setRenamingChatId(chat.id);
                                                 }}
                                                 onDelete={async () => {
@@ -1652,20 +1652,20 @@ export function ProjectPage({ projectId }: Props) {
                                 />
                             </div>
                             <div className={`sticky left-8 z-[60] ${NAME_COL_W} bg-white pl-2 text-left`}>
-                                Name
+                                Nome
                             </div>
-                            <div className="ml-auto w-24 shrink-0 text-left">Columns</div>
-                            <div className="w-24 shrink-0 text-left">Documents</div>
-                            <div className="w-32 shrink-0 text-left">Created</div>
+                            <div className="ml-auto w-24 shrink-0 text-left">Colunas</div>
+                            <div className="w-24 shrink-0 text-left">Documentos</div>
+                            <div className="w-32 shrink-0 text-left">Criado em</div>
                             <div className="w-8 shrink-0" />
                         </div>
                         {projectReviews.length === 0 ? (
                             <div className="flex flex-col items-start py-24 w-full max-w-xs mx-auto">
                                 <Table2 className="h-8 w-8 text-gray-300 mb-4" />
-                                <p className="text-2xl font-medium font-serif text-gray-900">Tabular Reviews</p>
-                                <p className="mt-1 text-xs text-gray-400 max-w-xs">Extract data from project documents into tables using AI.</p>
+                                <p className="text-2xl font-medium font-serif text-gray-900">Análises Tabulares</p>
+                                <p className="mt-1 text-xs text-gray-400 max-w-xs">Extraia dados dos documentos do projeto para tabelas usando IA.</p>
                                 <button onClick={handleNewReview} disabled={creatingReview || docs.length === 0} className="mt-4 inline-flex items-center gap-1 rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white hover:bg-gray-700 transition-colors shadow-md disabled:opacity-40">
-                                    + Create New
+                                    + Nova Análise
                                 </button>
                             </div>
                         ) : (
@@ -1683,7 +1683,7 @@ export function ProjectPage({ projectId }: Props) {
                                             {renamingReviewId === review.id ? (
                                                 <input autoFocus value={renameReviewValue} onChange={(e) => setRenameReviewValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submitReviewRename(review.id); if (e.key === "Escape") setRenamingReviewId(null); }} onBlur={() => submitReviewRename(review.id)} onClick={(e) => e.stopPropagation()} className="w-full text-sm text-gray-800 bg-transparent outline-none" />
                                             ) : (
-                                                <span className="text-sm text-gray-800 truncate block">{review.title ?? "Untitled Review"}</span>
+                                                <span className="text-sm text-gray-800 truncate block">{review.title ?? "Análise sem título"}</span>
                                             )}
                                         </div>
                                         <div className="ml-auto w-24 shrink-0 text-sm text-gray-500 truncate">{review.columns_config?.length ?? 0}</div>
@@ -1696,7 +1696,7 @@ export function ProjectPage({ projectId }: Props) {
                                                         setOwnerOnlyAction("rename this tabular review");
                                                         return;
                                                     }
-                                                    setRenameReviewValue(review.title ?? "Untitled Review");
+                                                    setRenameReviewValue(review.title ?? "Análise sem título");
                                                     setRenamingReviewId(review.id);
                                                 }}
                                                 onDelete={async () => {
@@ -1722,7 +1722,7 @@ export function ProjectPage({ projectId }: Props) {
                 open={addDocsOpen}
                 onClose={() => setAddDocsOpen(false)}
                 onSelect={handleDocsSelected}
-                breadcrumb={["Projects", project.name + (project.cm_number ? ` (${project.cm_number})` : ""), "Add Documents"]}
+                breadcrumb={["Projetos", project.name + (project.cm_number ? ` (${project.cm_number})` : ""), "Adicionar Documentos"]}
                 projectId={projectId}
             />
 
@@ -1768,12 +1768,12 @@ export function ProjectPage({ projectId }: Props) {
                 fetchPeople={getProjectPeople}
                 currentUserEmail={user?.email ?? null}
                 breadcrumb={[
-                    "Projects",
+                    "Projetos",
                     project
                         ? project.name +
                           (project.cm_number ? ` (${project.cm_number})` : "")
                         : "",
-                    "People",
+                    "Pessoas",
                 ]}
                 // Only owners may modify the member list. Without this prop
                 // PeopleModal renders read-only — non-owners can still see

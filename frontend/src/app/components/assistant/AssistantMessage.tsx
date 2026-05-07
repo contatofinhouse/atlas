@@ -145,8 +145,8 @@ function BulkEditActions({
                         versionId: annotation.version_id ?? null,
                         message:
                             verb === "accept"
-                                ? "Couldn't save one or more accepts."
-                                : "Couldn't save one or more rejects.",
+                                ? "Não foi possível salvar uma ou mais aprovações."
+                                : "Não foi possível salvar uma ou mais rejeições.",
                     });
                 }
                 done++;
@@ -172,7 +172,7 @@ function BulkEditActions({
                 {busy === "accept" && (
                     <Loader2 className="h-3 w-3 animate-spin" />
                 )}
-                Accept all
+                Aceitar tudo
             </button>
             <button
                 onClick={() => handleAll("reject")}
@@ -182,7 +182,7 @@ function BulkEditActions({
                 {busy === "reject" && (
                     <Loader2 className="h-3 w-3 animate-spin" />
                 )}
-                Reject all
+                Rejeitar tudo
             </button>
             {progress && (
                 <span className="text-xs font-serif text-gray-500">
@@ -197,7 +197,7 @@ function BulkEditActions({
                     disabled={!!busy}
                     className="ml-auto px-2 py-1 text-xs rounded border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                 >
-                    View
+                    Visualizar
                 </button>
             )}
         </div>
@@ -253,11 +253,11 @@ function EditCardsSection({
     const summary =
         pending.length > 0
             ? docCount > 1
-                ? `${pending.length} tracked changes across ${docCount} documents`
-                : `${pending.length} tracked ${pending.length === 1 ? "change" : "changes"}`
+                ? `${pending.length} alterações rastreadas em ${docCount} documentos`
+                : `${pending.length} ${pending.length === 1 ? "alteração rastreada" : "alterações rastreadas"}`
             : docCount > 1
-              ? `${resolvedCount} resolved tracked changes across ${docCount} documents`
-              : `${resolvedCount} resolved tracked ${resolvedCount === 1 ? "change" : "changes"}`;
+              ? `${resolvedCount} alterações rastreadas resolvidas em ${docCount} documentos`
+              : `${resolvedCount} ${resolvedCount === 1 ? "alteração rastreada resolvida" : "alterações rastreadas resolvidas"}`;
 
     return (
         <div className="border border-gray-200 rounded-lg bg-white overflow-hidden">
@@ -268,7 +268,7 @@ function EditCardsSection({
                 </p>
                 <button
                     onClick={() => setIsOpen((v) => !v)}
-                    aria-label={isOpen ? "Collapse edits" : "Expand edits"}
+                    aria-label={isOpen ? "Recolher alterações" : "Expandir alterações"}
                     className="shrink-0 rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors"
                 >
                     <ChevronDown
@@ -345,11 +345,11 @@ function ResponseStatus({ status }: { status: StatusState }) {
 // ---------------------------------------------------------------------------
 
 const THINKING_PHRASES = [
-    "Thinking...",
-    "Pondering...",
-    "Analyzing...",
-    "Reviewing...",
-    "Reasoning...",
+    "Pensando...",
+    "Refletindo...",
+    "Analisando...",
+    "Revisando...",
+    "Raciocinando...",
 ];
 
 function ReasoningBlock({
@@ -391,7 +391,7 @@ function ReasoningBlock({
                 <span className="font-medium ml-2">
                     {isStreaming
                         ? THINKING_PHRASES[thinkingIndex]
-                        : "Thought process"}
+                        : "Processo de pensamento"}
                 </span>
                 {!isStreaming && (
                     <ChevronDown
@@ -444,7 +444,7 @@ function DocReadBlock({
             )}
             <div className="ml-2 min-w-0 flex-1 whitespace-normal break-words">
                 <span className="font-medium">
-                    {isStreaming ? "Reading" : "Read"}
+                    {isStreaming ? "Lendo" : "Lido"}
                 </span>{" "}
                 {isStreaming ? (
                     <span>{filename}...</span>
@@ -476,10 +476,10 @@ function DocFindBlock({
     isStreaming?: boolean;
     showConnector?: boolean;
 }) {
-    const label = isStreaming ? "Finding" : "Found";
+    const label = isStreaming ? "Buscando" : "Encontrado";
     const matchSuffix = isStreaming
         ? ""
-        : ` (${totalMatches} ${totalMatches === 1 ? "match" : "matches"})`;
+        : ` (${totalMatches} ${totalMatches === 1 ? "resultado" : "resultados"})`;
     return (
         <div className="flex items-start text-sm font-serif text-gray-500 relative">
             {showConnector && (
@@ -496,7 +496,7 @@ function DocFindBlock({
                 <span className="font-medium">{label}</span>{" "}
                 <span>
                     &ldquo;{query}&rdquo;{matchSuffix}
-                    <span className="ml-1 text-gray-400">in {filename}</span>
+                    <span className="ml-1 text-gray-400">em {filename}</span>
                     {isStreaming && "..."}
                 </span>
             </div>
@@ -525,7 +525,7 @@ function DocCreatedBlock({
             )}
             <div className="ml-2 min-w-0 flex-1 whitespace-normal break-words">
                 <span className="font-medium">
-                    {isStreaming ? "Creating" : "Created"}
+                    {isStreaming ? "Criando" : "Criado"}
                 </span>{" "}
                 <span>{isStreaming ? `${filename}...` : filename}</span>
             </div>
@@ -550,9 +550,9 @@ function DocReplicatedBlock({
     isStreaming?: boolean;
     hasError?: boolean;
 }) {
-    const label = isStreaming ? "Replicating" : "Replicated";
+    const label = isStreaming ? "Replicando" : "Replicado";
     const suffix =
-        !isStreaming && count > 1 ? ` ${count} times` : isStreaming ? "..." : "";
+        !isStreaming && count > 1 ? ` ${count} vezes` : isStreaming ? "..." : "";
     return (
         <div className="flex items-start text-sm font-serif text-gray-500 relative">
             {showConnector && (
@@ -733,7 +733,7 @@ function WorkflowAppliedBlock({
             )}
             <div className="mt-2 w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
             <div className="ml-2 min-w-0 flex-1 whitespace-normal break-words">
-                <span className="font-medium">Applied Workflow</span>{" "}
+                <span className="font-medium">Modelo Aplicado</span>{" "}
                 {onClick ? (
                     <button
                         onClick={onClick}
@@ -775,10 +775,10 @@ function DocEditedBlock({
             <div className="ml-2 min-w-0 flex-1 whitespace-normal break-words">
                 <span className="font-medium">
                     {isStreaming
-                        ? "Editing"
+                        ? "Editando"
                         : hasError
-                          ? "Edit failed"
-                          : "Edited"}
+                          ? "Falha na edição"
+                          : "Editado"}
                 </span>{" "}
                 <span>{isStreaming ? `${filename}...` : filename}</span>
             </div>
@@ -1237,9 +1237,9 @@ export function AssistantMessage({
                         <div className="absolute bottom-0 w-[1px] bg-gray-300 top-[13px] left-[2.5px] h-[calc(100%+11px)]" />
                     )}
                     <div className="w-1.5 h-1.5 rounded-full border border-gray-400 border-t-transparent animate-spin shrink-0" />
-                    <span className="font-medium ml-2">Running</span>
+                    <span className="font-medium ml-2">Executando</span>
                     <span className="ml-1">
-                        {event.name ? `${event.name}...` : "tool..."}
+                        {event.name ? `${event.name}...` : "ferramenta..."}
                     </span>
                 </div>
             );
@@ -1254,7 +1254,7 @@ export function AssistantMessage({
                         <div className="absolute bottom-0 w-[1px] bg-gray-300 top-[13px] left-[2.5px] h-[calc(100%+11px)]" />
                     )}
                     <div className="w-1.5 h-1.5 rounded-full border border-gray-400 border-t-transparent animate-spin shrink-0" />
-                    <span className="ml-2">Thinking...</span>
+                    <span className="ml-2">Pensando...</span>
                 </div>
             );
         }
@@ -1485,7 +1485,7 @@ export function AssistantMessage({
                 {isError && (
                     <div className="mt-2 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-serif text-red-700">
                         <span className="leading-snug">
-                            {errorMessage ?? "Sorry, something went wrong."}
+                            {errorMessage ?? "Desculpe, algo deu errado."}
                         </span>
                     </div>
                 )}

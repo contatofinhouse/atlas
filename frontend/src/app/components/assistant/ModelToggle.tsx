@@ -43,7 +43,7 @@ interface Props {
 export function ModelToggle({ value, onChange, apiKeys }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const selected = MODELS.find((m) => m.id === value);
-    const selectedLabel = selected?.label ?? "Model";
+    const selectedLabel = selected?.label ?? "Modelo";
     const selectedAvailable = apiKeys
         ? isModelAvailable(value, apiKeys)
         : true;
@@ -56,8 +56,8 @@ export function ModelToggle({ value, onChange, apiKeys }: Props) {
                     className={`flex items-center gap-1.5 rounded-lg px-2 h-8 text-sm transition-colors cursor-pointer text-gray-400 hover:bg-gray-100 hover:text-gray-700 ${isOpen ? "bg-gray-100 text-gray-700" : ""}`}
                     title={
                         !selectedAvailable
-                            ? "API key missing for selected model"
-                            : "Choose model"
+                            ? "Chave de API ausente para o modelo selecionado"
+                            : "Escolha o modelo"
                     }
                 >
                     {!selectedAvailable && (

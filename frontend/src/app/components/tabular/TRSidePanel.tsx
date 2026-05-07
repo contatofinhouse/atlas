@@ -227,7 +227,7 @@ export function TRSidePanel({
                                 }
                             }}
                             disabled={regenerating}
-                            title="Regenerate"
+                            title="Regenerar"
                             className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 disabled:opacity-40"
                         >
                             {regenerating ? (
@@ -275,7 +275,7 @@ export function TRSidePanel({
                         {/* Results */}
                         <div className="mb-6">
                             <h4 className="mb-2 text-sm font-semibold tracking-wider font-sans">
-                                Results
+                                Resultados
                             </h4>
                             <div className="text-xs leading-relaxed text-slate-600">
                                 <MarkdownContent
@@ -292,7 +292,7 @@ export function TRSidePanel({
                         {cell.content?.reasoning && (
                             <div>
                                 <h4 className="mb-2 text-sm font-semibold tracking-wider font-sans">
-                                    Reasoning
+                                    Raciocínio
                                 </h4>
                                 <div className="text-xs leading-relaxed text-slate-600">
                                     <MarkdownContent

@@ -45,7 +45,7 @@ export default function AccountPage() {
         } catch {
             setIsDeleting(false);
             setDeleteConfirm(false);
-            alert("Failed to delete account. Please try again.");
+            alert("Falha ao excluir a conta. Tente novamente.");
         }
     };
 
@@ -58,7 +58,7 @@ export default function AccountPage() {
             setSaved(true);
             setTimeout(() => setSaved(false), 2000);
         } else {
-            alert("Failed to update display name. Please try again.");
+            alert("Falha ao atualizar o nome. Tente novamente.");
         }
     };
 
@@ -71,7 +71,7 @@ export default function AccountPage() {
             setOrgSaved(true);
             setTimeout(() => setOrgSaved(false), 2000);
         } else {
-            alert("Failed to update organisation. Please try again.");
+            alert("Falha ao atualizar a organização. Tente novamente.");
         }
     };
 
@@ -82,19 +82,19 @@ export default function AccountPage() {
             {/* Profile Settings */}
             <div className="pb-6">
                 <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-2xl font-medium font-serif">Profile</h2>
+                    <h2 className="text-2xl font-medium font-serif">Perfil</h2>
                 </div>
                 <div className="space-y-4">
                     <div>
                         <label className="text-sm text-gray-600 block mb-2">
-                            Display Name
+                            Nome de Exibição
                         </label>
                         <div className="flex gap-2">
                             <Input
                                 type="text"
                                 value={displayName}
                                 onChange={(e) => setDisplayName(e.target.value)}
-                                placeholder="Enter your name"
+                                placeholder="Digite seu nome"
                                 className="flex-1"
                             />
                             <Button
@@ -105,21 +105,21 @@ export default function AccountPage() {
                                 className="min-w-[80px] transition-all bg-black hover:bg-gray-900 text-white"
                             >
                                 {isSavingName ? (
-                                    "Saving..."
+                                    "Salvando..."
                                 ) : saved ? (
                                     <>
                                         <Check className="h-4 w-3" />
-                                        Saved
+                                        Salvo
                                     </>
                                 ) : (
-                                    "Save"
+                                    "Salvar"
                                 )}
                             </Button>
                         </div>
                     </div>
                     <div>
                         <label className="text-sm text-gray-600 block mb-2">
-                            Organisation
+                            Organização
                         </label>
                         <div className="flex gap-2">
                             <Input
@@ -128,7 +128,7 @@ export default function AccountPage() {
                                 onChange={(e) =>
                                     setOrganisation(e.target.value)
                                 }
-                                placeholder="Enter your organisation"
+                                placeholder="Digite o nome da empresa/escritório"
                                 className="flex-1"
                             />
                             <Button
@@ -142,21 +142,21 @@ export default function AccountPage() {
                                 className="min-w-[80px] transition-all bg-black hover:bg-gray-900 text-white"
                             >
                                 {isSavingOrg ? (
-                                    "Saving..."
+                                    "Salvando..."
                                 ) : orgSaved ? (
                                     <>
                                         <Check className="h-4 w-3" />
-                                        Saved
+                                        Salvo
                                     </>
                                 ) : (
-                                    "Save"
+                                    "Salvar"
                                 )}
                             </Button>
                         </div>
                     </div>
                     <div>
                         <label className="text-sm text-gray-600 block mb-2">
-                            Email
+                            E-mail
                         </label>
                         <p className="text-base">{user?.email}</p>
                     </div>
@@ -167,12 +167,12 @@ export default function AccountPage() {
             <div className="py-6">
                 <div className="flex items-center gap-2 mb-4">
                     <h2 className="text-2xl font-medium font-serif">
-                        Usage Plan
+                        Plano de Uso
                     </h2>
                 </div>
                 <div>
                     <p className="text-base font-medium text-gray-500 capitalize">
-                        {profile?.tier || "Free"}
+                        {profile?.tier === "Free" ? "Grátis" : profile?.tier || "Grátis"}
                     </p>
                 </div>
             </div>
@@ -180,7 +180,7 @@ export default function AccountPage() {
             {/* Actions */}
             <div className="py-6">
                 <h2 className="text-2xl font-medium font-serif mb-4">
-                    Actions
+                    Ações
                 </h2>
                 <Button
                     variant="outline"
@@ -188,24 +188,23 @@ export default function AccountPage() {
                     className="w-full sm:w-auto"
                 >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
+                    Sair
                 </Button>
             </div>
 
             {/* Danger Zone */}
             <div className="py-6">
                 <h2 className="text-2xl font-medium font-serif mb-1 text-red-600">
-                    Danger Zone
+                    Zona de Risco
                 </h2>
                 <p className="text-sm text-gray-500 mb-4">
-                    Permanently delete your account and all associated data.
-                    This action cannot be undone.
+                    Excluir permanentemente sua conta e todos os dados associados.
+                    Esta ação não pode ser desfeita.
                 </p>
                 {deleteConfirm ? (
                     <div className="rounded-lg border border-red-200 bg-red-50 p-4 space-y-3 max-w-sm">
                         <p className="text-sm font-medium text-red-700">
-                            Are you sure? This will permanently delete your
-                            account.
+                            Tem certeza? Isso excluirá permanentemente sua conta.
                         </p>
                         <div className="flex gap-2">
                             <Button
@@ -214,14 +213,14 @@ export default function AccountPage() {
                                 disabled={isDeleting}
                                 className="text-sm"
                             >
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button
                                 onClick={handleDeleteAccount}
                                 disabled={isDeleting}
                                 className="text-sm bg-red-600 hover:bg-red-700 text-white"
                             >
-                                {isDeleting ? "Deleting…" : "Delete Account"}
+                                {isDeleting ? "Excluindo…" : "Excluir Conta"}
                             </Button>
                         </div>
                     </div>
@@ -231,7 +230,7 @@ export default function AccountPage() {
                         onClick={() => setDeleteConfirm(true)}
                         className="w-full sm:w-auto border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
-                        Delete Account
+                        Excluir Conta
                     </Button>
                 )}
             </div>

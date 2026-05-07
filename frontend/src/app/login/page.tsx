@@ -37,7 +37,7 @@ export default function LoginPage() {
 
             router.push("/assistant");
         } catch (error: any) {
-            setError(error.message || "An error occurred during login");
+            setError(error.message || "Ocorreu um erro durante o login");
         } finally {
             setLoading(false);
         }
@@ -53,17 +53,17 @@ export default function LoginPage() {
                 <div className="bg-white border border-gray-200 rounded-2xl p-8">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-left text-2xl font-serif">
-                            Log In
+                            Entrar
                         </h2>
                         <div className="bg-gray-100 p-1 rounded-md flex text-xs font-medium">
                             <span className="text-gray-600 px-3 py-1 bg-white rounded-sm shadow-sm">
-                                Log in
+                                Entrar
                             </span>
                             <Link
                                 href="/signup"
                                 className="px-3 py-1 text-gray-500 hover:text-gray-900"
                             >
-                                Sign up
+                                Cadastro
                             </Link>
                         </div>
                     </div>
@@ -73,14 +73,14 @@ export default function LoginPage() {
                                 htmlFor="email"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Email
+                                E-mail
                             </label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
+                                placeholder="Digite seu e-mail"
                                 required
                                 className="w-full"
                             />
@@ -91,14 +91,14 @@ export default function LoginPage() {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Password
+                                Senha
                             </label>
                             <Input
                                 id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
+                                placeholder="Digite sua senha"
                                 required
                                 className="w-full"
                             />
@@ -115,7 +115,7 @@ export default function LoginPage() {
                             disabled={loading}
                             className="w-full mt-5 bg-black hover:bg-gray-900 text-white"
                         >
-                            {loading ? "Logging in..." : "Log in"}
+                            {loading ? "Entrando..." : "Entrar"}
                         </Button>
                     </form>
                 </div>

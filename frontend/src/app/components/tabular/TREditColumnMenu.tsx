@@ -136,7 +136,7 @@ export function TREditColumnMenu({
                 >
                     <div className="flex items-center justify-between mb-3">
                         <p className="text-sm font-medium text-gray-800">
-                            Edit Column
+                            Editar Coluna
                         </p>
                         <button
                             type="button"
@@ -147,7 +147,7 @@ export function TREditColumnMenu({
                         </button>
                     </div>
                     <label className="text-xs font-medium text-gray-800">
-                        Label
+                        Nome
                     </label>
                     <input
                         type="text"
@@ -159,7 +159,7 @@ export function TREditColumnMenu({
                     {/* Format */}
                     <div className="mt-3">
                         <label className="text-xs font-medium text-gray-800">
-                            Format
+                            Formato
                         </label>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -239,7 +239,7 @@ export function TREditColumnMenu({
                                     onKeyDown={handleTagKeyDown}
                                     onBlur={commitTag}
                                     placeholder={
-                                        tags.length === 0 ? "Add tags…" : ""
+                                        tags.length === 0 ? "Adicionar tags…" : ""
                                     }
                                     className="min-w-[60px] flex-1 bg-transparent text-xs text-gray-700 placeholder-gray-300 focus:outline-none"
                                 />
@@ -264,7 +264,7 @@ export function TREditColumnMenu({
                                 ) : (
                                     <Plus className="h-3 w-3" />
                                 )}
-                                Auto-generate
+                                Gerar automaticamente
                             </button>
                         </div>
                         <textarea
@@ -283,7 +283,7 @@ export function TREditColumnMenu({
                             className="inline-flex items-center gap-1.5 text-xs text-red-500 transition-colors hover:text-red-600 disabled:text-red-300"
                         >
                             <Trash2 className="h-3.5 w-3.5" />
-                            Delete
+                            Excluir
                         </button>
                         <button
                             type="button"
@@ -297,7 +297,7 @@ export function TREditColumnMenu({
                             }
                             className="rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-40"
                         >
-                            {saving ? "Saving…" : "Save"}
+                            {saving ? "Salvando…" : "Salvar"}
                         </button>
                     </div>
                 </div>

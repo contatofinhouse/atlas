@@ -222,22 +222,22 @@ export function AddNewTRModal({
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
                         {isProjectMode && projectName ? (
                             <>
-                                <span>Projects</span>
+                                <span>Projetos</span>
                                 <span>›</span>
                                 <span>
                                     {projectName}
                                     {projectCmNumber ? ` (#${projectCmNumber})` : ""}
                                 </span>
                                 <span>›</span>
-                                <span>Tabular Reviews</span>
+                                <span>Análises Tabulares</span>
                                 <span>›</span>
-                                <span>New review</span>
+                                <span>Nova análise</span>
                             </>
                         ) : (
                             <>
-                                <span>Tabular Reviews</span>
+                                <span>Análises Tabulares</span>
                                 <span>›</span>
-                                <span>New review</span>
+                                <span>Nova análise</span>
                             </>
                         )}
                     </div>
@@ -259,7 +259,7 @@ export function AddNewTRModal({
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Review name"
+                            placeholder="Nome da análise"
                             className="w-full text-2xl font-serif text-gray-800 placeholder-gray-400 focus:outline-none bg-transparent"
                             autoFocus
                         />
@@ -267,7 +267,7 @@ export function AddNewTRModal({
                         {/* Workflow template */}
                         <div className="space-y-2">
                             <p className="text-xs font-medium text-gray-700">
-                                Workflow Template
+                                Modelo de Análise
                             </p>
                             <div className="relative">
                                 <button
@@ -290,10 +290,10 @@ export function AddNewTRModal({
                                             }
                                         >
                                             {loadingWorkflows
-                                                ? "Loading templates…"
+                                                ? "Carregando modelos…"
                                                 : selectedWorkflow
                                                   ? selectedWorkflow.title
-                                                  : "No template — start from scratch"}
+                                                  : "Sem modelo — começar do zero"}
                                         </span>
                                     </div>
                                     <ChevronDown className="h-3.5 w-3.5 text-gray-400 shrink-0 ml-2" />
@@ -309,7 +309,7 @@ export function AddNewTRModal({
                                             className={`w-full text-left flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${!selectedWorkflowId ? "bg-gray-50 text-gray-900" : "text-gray-500"}`}
                                         >
                                             <span className="flex-1">
-                                                No template — start from scratch
+                                                Sem modelo — começar do zero
                                             </span>
                                             {!selectedWorkflowId && (
                                                 <Check className="h-3.5 w-3.5 text-gray-500 shrink-0" />
@@ -370,7 +370,7 @@ export function AddNewTRModal({
                                     />
                                 </span>
                                 <span className="text-sm text-gray-600">
-                                    Create under a project
+                                    Criar em um projeto
                                 </span>
                             </button>
 
@@ -395,7 +395,7 @@ export function AddNewTRModal({
                                                   (selectedProject.cm_number
                                                       ? ` (#${selectedProject.cm_number})`
                                                       : "")
-                                                : "Select project…"}
+                                                : "Selecionar projeto…"}
                                         </span>
                                         <ChevronDown className="h-3.5 w-3.5 text-gray-400 shrink-0" />
                                     </button>
@@ -403,7 +403,7 @@ export function AddNewTRModal({
                                         <div className="absolute left-0 top-full z-20 mt-1 w-full rounded-xl border border-gray-100 bg-white shadow-lg overflow-y-auto max-h-48">
                                             {projects.length === 0 ? (
                                                 <p className="px-3 py-2 text-xs text-gray-400">
-                                                    No projects found
+                                                    Nenhum projeto encontrado
                                                 </p>
                                             ) : (
                                                 projects.map((p) => (
@@ -446,7 +446,7 @@ export function AddNewTRModal({
                         {showDirectory && (
                             <div className="space-y-2">
                                 <p className="text-xs font-medium text-gray-700">
-                                    Select Documents
+                                    Selecionar Documentos
                                 </p>
                                 <div>
                                     <FileDirectory
@@ -467,11 +467,11 @@ export function AddNewTRModal({
                                         loading={directoryLoading}
                                         selectedIds={selectedDocIds}
                                         onChange={setSelectedDocIds}
-                                        heading={isProjectMode ? "Project Documents" : "Documents"}
+                                        heading={isProjectMode ? "Documentos do Projeto" : "Documentos"}
                                         emptyMessage={
                                             isProjectMode || underProject
-                                                ? "No ready documents in this project"
-                                                : "No documents yet"
+                                                ? "Nenhum documento pronto neste projeto"
+                                                : "Nenhum documento ainda"
                                         }
                                     />
                                 </div>
@@ -501,7 +501,7 @@ export function AddNewTRModal({
                                 ) : (
                                     <Upload className="h-3.5 w-3.5" />
                                 )}
-                                {uploading ? "Uploading…" : "Upload"}
+                                {uploading ? "Enviando…" : "Enviar"}
                             </button>
                         </div>
                         <div className="flex items-center gap-2">
@@ -510,7 +510,7 @@ export function AddNewTRModal({
                                 onClick={handleClose}
                                 className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 transition-colors"
                             >
-                                Cancel
+                                Cancelar
                             </button>
                             <button
                                 type="submit"
@@ -520,7 +520,7 @@ export function AddNewTRModal({
                                 }
                                 className="rounded-lg bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-40 transition-colors"
                             >
-                                Create
+                                Criar
                             </button>
                         </div>
                     </div>

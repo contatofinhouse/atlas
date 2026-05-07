@@ -71,7 +71,7 @@ export function InitialView({ onSubmit }: InitialViewProps) {
                                     "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 800ms ease-in-out 300ms",
                             }}
                         >
-                            Hi, {username}
+                            Olá, {username}
                         </h1>
                     </div>
 
@@ -84,7 +84,7 @@ export function InitialView({ onSubmit }: InitialViewProps) {
 
                     <div className="text-center">
                         <p className="text-xs py-3 mb-3 text-gray-500">
-                            AI can make mistakes. Answers are not legal advice.
+                            A IA pode cometer erros. As respostas não são conselhos legais.
                         </p>
                     </div>
                 </div>

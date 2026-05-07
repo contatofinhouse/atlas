@@ -21,10 +21,10 @@ import { SidebarChatItem } from "@/app/components/shared/SidebarChatItem";
 import { listProjects } from "@/app/lib/mikeApi";
 
 const NAV_ITEMS = [
-    { href: "/assistant", label: "Assistant", icon: MessageSquare },
-    { href: "/projects", label: "Projects", icon: FolderOpen },
-    { href: "/tabular-reviews", label: "Tabular Review", icon: Table2 },
-    { href: "/workflows", label: "Workflows", icon: Library },
+    { href: "/assistant", label: "Assistente", icon: MessageSquare },
+    { href: "/projects", label: "Projetos", icon: FolderOpen },
+    { href: "/tabular-reviews", label: "Análise Tabular", icon: Table2 },
+    { href: "/workflows", label: "Modelos de Análise", icon: Library },
 ];
 
 interface AppSidebarProps {
@@ -102,7 +102,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
 
     const getUserTier = () => {
         if (!profile) return "";
-        return profile.tier || "Free";
+        return profile.tier === "Free" ? "Grátis" : profile.tier || "Grátis";
     };
 
     if (!user) return null;
@@ -141,7 +141,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                 <button
                     onClick={onToggle}
                     className="h-9 w-9 p-2.5 items-center flex hover:bg-gray-100 rounded-md transition-colors"
-                    title={isOpen ? "Close sidebar" : "Open sidebar"}
+                    title={isOpen ? "Fechar menu" : "Abrir menu"}
                 >
                     <PanelLeft className="h-4 w-4" />
                 </button>
@@ -190,7 +190,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                             shouldAnimate ? "sidebar-fade-in" : ""
                         }`}
                     >
-                        <span>Assistant History</span>
+                        <span>Histórico de Chat</span>
                         <ChevronDown
                             className={`h-3.5 w-3.5 transition-transform ${historyCollapsed ? "-rotate-90" : ""}`}
                         />
@@ -218,7 +218,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                     shouldAnimate ? "sidebar-fade-in-2" : ""
                                 }`}
                             >
-                                No chats yet
+                                Nenhum chat ainda
                             </div>
                         ) : (
                             <div
@@ -299,7 +299,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                                     className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 rounded-md"
                                 >
                                     <User className="h-4 w-4" />
-                                    Account Settings
+                                    Configurações da Conta
                                 </button>
                             </div>
                         )}

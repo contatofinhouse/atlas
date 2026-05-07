@@ -35,14 +35,14 @@ export default function SignupPage() {
 
         // Validate passwords match
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setError("As senhas não coincidem");
             setLoading(false);
             return;
         }
 
         // Validate password length
         if (password.length < 6) {
-            setError("Password must be at least 6 characters");
+            setError("A senha deve ter pelo menos 6 caracteres");
             setLoading(false);
             return;
         }
@@ -84,7 +84,7 @@ export default function SignupPage() {
                 router.push("/assistant");
             }, 2000);
         } catch (error: any) {
-            setError(error.message || "An error occurred during signup");
+            setError(error.message || "Ocorreu um erro durante o cadastro");
         } finally {
             setLoading(false);
         }
@@ -103,10 +103,10 @@ export default function SignupPage() {
                             <CheckCircle2 className="h-6 w-6 text-green-600" />
                         </div>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                            Account created!
+                            Conta criada!
                         </h2>
                         <p className="text-gray-600 leading-relaxed">
-                            Redirecting you to the home page...
+                            Redirecionando você para a página inicial...
                         </p>
                     </div>
                 </div>
@@ -124,17 +124,17 @@ export default function SignupPage() {
                 <div className="bg-white border border-gray-200 rounded-2xl p-8">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-left text-2xl font-serif">
-                            Create Account
+                            Criar Conta
                         </h2>
                         <div className="bg-gray-100 p-1 rounded-md flex text-xs font-medium">
                             <Link
                                 href="/login"
                                 className="px-3 py-1 text-gray-500 hover:text-gray-900"
                             >
-                                Log in
+                                Entrar
                             </Link>
                             <span className="px-3 py-1 bg-white rounded-sm shadow-sm text-gray-900">
-                                Sign up
+                                Cadastro
                             </span>
                         </div>
                     </div>
@@ -145,9 +145,9 @@ export default function SignupPage() {
                                 htmlFor="name"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Name{" "}
+                                Nome{" "}
                                 <span className="text-gray-400 font-normal">
-                                    (optional)
+                                    (opcional)
                                 </span>
                             </label>
                             <Input
@@ -155,7 +155,7 @@ export default function SignupPage() {
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Your name"
+                                placeholder="Seu nome"
                                 className="w-full"
                             />
                         </div>
@@ -165,9 +165,9 @@ export default function SignupPage() {
                                 htmlFor="organisation"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Organisation{" "}
+                                Empresa / Escritório{" "}
                                 <span className="text-gray-400 font-normal">
-                                    (optional)
+                                    (opcional)
                                 </span>
                             </label>
                             <Input
@@ -177,7 +177,7 @@ export default function SignupPage() {
                                 onChange={(e) =>
                                     setOrganisation(e.target.value)
                                 }
-                                placeholder="Your organisation"
+                                placeholder="Sua empresa"
                                 className="w-full"
                             />
                         </div>
@@ -187,14 +187,14 @@ export default function SignupPage() {
                                 htmlFor="email"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Email
+                                E-mail
                             </label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
+                                placeholder="Digite seu e-mail"
                                 required
                                 className="w-full"
                             />
@@ -205,14 +205,14 @@ export default function SignupPage() {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Password
+                                Senha
                             </label>
                             <Input
                                 id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Create a password (min. 6 characters)"
+                                placeholder="Crie uma senha (mín. 6 caracteres)"
                                 required
                                 className="w-full"
                             />
@@ -223,7 +223,7 @@ export default function SignupPage() {
                                 htmlFor="confirmPassword"
                                 className="block text-sm font-medium text-gray-700 mb-2"
                             >
-                                Confirm Password
+                                Confirmar Senha
                             </label>
                             <Input
                                 id="confirmPassword"
@@ -232,7 +232,7 @@ export default function SignupPage() {
                                 onChange={(e) =>
                                     setConfirmPassword(e.target.value)
                                 }
-                                placeholder="Confirm your password"
+                                placeholder="Confirme sua senha"
                                 required
                                 className="w-full"
                             />
@@ -249,29 +249,29 @@ export default function SignupPage() {
                             disabled={loading}
                             className="w-full bg-black hover:bg-gray-900 text-white"
                         >
-                            {loading ? "Creating account..." : "Sign up"}
+                            {loading ? "Criando conta..." : "Criar Conta"}
                         </Button>
                     </form>
 
                     {/* Terms and Privacy */}
                     <div className="mt-4 text-center text-xs text-gray-500">
-                        By signing up, you agree to our{" "}
+                        Ao se cadastrar, você concorda com nossos{" "}
                         <Link
                             href="https://mikeoss.com/terms"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                         >
-                            Terms of Use
+                            Termos de Uso
                         </Link>{" "}
-                        and{" "}
+                        e{" "}
                         <Link
                             href="https://mikeoss.com/privacy"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                         >
-                            Privacy Policy
+                            Política de Privacidade
                         </Link>
                     </div>
                 </div>

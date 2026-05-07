@@ -224,7 +224,7 @@ export function AddDocumentsModal({
                         <Search className="h-3.5 w-3.5 text-gray-400 shrink-0" />
                         <input
                             type="text"
-                            placeholder="Search…"
+                            placeholder="Buscar…"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
@@ -252,7 +252,7 @@ export function AddDocumentsModal({
                         allowMultiple={allowMultiple}
                         forceExpanded={!!q}
                         emptyMessage={
-                            q ? "No matches found" : "No documents yet"
+                            q ? "Nenhuma correspondência encontrada" : "Nenhum documento ainda"
                         }
                         onDelete={handleDelete}
                     />
@@ -279,27 +279,27 @@ export function AddDocumentsModal({
                             ) : (
                                 <Upload className="h-3.5 w-3.5" />
                             )}
-                            {uploading ? "Uploading…" : "Upload"}
+                            {uploading ? "Enviando…" : "Enviar"}
                         </button>
                     </div>
                     <div className="flex items-center gap-2">
                         {selectedIds.size > 0 && (
                             <span className="text-xs text-gray-400">
-                                {selectedIds.size} selected
+                                {selectedIds.size} selecionados
                             </span>
                         )}
                         <button
                             onClick={onClose}
                             className="rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100"
                         >
-                            Cancel
+                            Cancelar
                         </button>
                         <button
                             onClick={handleConfirm}
                             disabled={selectedIds.size === 0 || uploading}
                             className="rounded-lg bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-40"
                         >
-                            {uploading ? "Saving…" : "Confirm"}
+                            {uploading ? "Salvando…" : "Confirmar"}
                         </button>
                     </div>
                 </div>

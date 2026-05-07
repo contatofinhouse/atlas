@@ -582,8 +582,7 @@ export function ChatView({
                             />
                             <div className="py-3 text-center">
                                 <p className="text-xs text-gray-500">
-                                    AI can make mistakes. Answers are not legal
-                                    advice.
+                                    A IA pode cometer erros. As respostas não são conselhos legais.
                                 </p>
                             </div>
                         </div>
