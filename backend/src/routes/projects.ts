@@ -19,24 +19,31 @@ projectsRouter.get("/", requireAuth, async (req, res) => {
   const userId = res.locals.userId as string;
   const userEmail = res.locals.userEmail as string;
   const db = createServerSupabase();
+  console.log(`[GET /projects] Fetching projects for user: ${userId} (${userEmail})`);
 
   const { data: ownProjects, error: ownError } = await db
     .from("projects")
     .select("*")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
-  if (ownError) return void res.status(500).json({ detail: ownError.message });
+  if (ownError) {
+    console.error(`[GET /projects] Error fetching own projects:`, ownError);
+    return void res.status(500).json({ detail: ownError.message });
+  }
+  console.log(`[GET /projects] Found ${ownProjects?.length ?? 0} own projects`);
 
   const { data: sharedProjects, error: sharedError } = userEmail
     ? await db
         .from("projects")
         .select("*")
-        .contains("shared_with", [userEmail])
+        .contains("shared_with", JSON.stringify([userEmail]))
         .neq("user_id", userId)
         .order("created_at", { ascending: false })
     : { data: [], error: null };
-  if (sharedError)
+  if (sharedError) {
+    console.error(`[GET /projects] Error fetching shared projects:`, sharedError);
     return void res.status(500).json({ detail: sharedError.message });
+  }
 
   const projects = [...(ownProjects ?? []), ...(sharedProjects ?? [])].sort(
     (a, b) =>
@@ -68,6 +75,7 @@ projectsRouter.get("/", requireAuth, async (req, res) => {
       };
     }),
   );
+  console.log(`[GET /projects] Returning ${result.length} projects to client.`);
   res.json(result);
 });
 
@@ -83,6 +91,7 @@ projectsRouter.post("/", requireAuth, async (req, res) => {
     return void res.status(400).json({ detail: "name is required" });
 
   const db = createServerSupabase();
+  console.log(`[POST /projects] Creating project "${name}" for user: ${userId}`);
   const { data, error } = await db
     .from("projects")
     .insert({
@@ -93,7 +102,11 @@ projectsRouter.post("/", requireAuth, async (req, res) => {
     })
     .select("*")
     .single();
-  if (error) return void res.status(500).json({ detail: error.message });
+  if (error) {
+    console.error(`[POST /projects] Error inserting project:`, error);
+    return void res.status(500).json({ detail: error.message });
+  }
+  console.log(`[POST /projects] Successfully created project: ${data.id}`);
   res.status(201).json({ ...data, documents: [] });
 });
 
@@ -618,10 +631,12 @@ export async function handleDocumentUpload(
     .select("*")
     .single();
 
-  if (insertErr || !doc)
+  if (insertErr || !doc) {
+    console.error("[upload] Supabase insert error:", insertErr);
     return void res
       .status(500)
       .json({ detail: "Failed to create document record" });
+  }
 
   try {
     const docId = doc.id as string;

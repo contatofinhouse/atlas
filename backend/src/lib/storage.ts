@@ -1,39 +1,18 @@
 /**
- * Cloudflare R2 storage utilities for Mike document management.
- * R2 is S3-compatible — uses @aws-sdk/client-s3.
+ * Supabase Storage utilities for Mike document management.
+ * Replaced Cloudflare R2 with Supabase Storage.
  *
  * Required env vars:
- *   R2_ENDPOINT_URL     — https://<account-id>.r2.cloudflarestorage.com
- *   R2_ACCESS_KEY_ID    — R2 API token (Access Key ID)
- *   R2_SECRET_ACCESS_KEY — R2 API token (Secret Access Key)
- *   R2_BUCKET_NAME      — bucket name (default: "mike")
+ *   SUPABASE_URL
+ *   SUPABASE_SECRET_KEY
  */
 
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createServerSupabase } from "./supabase";
 
-function getClient(): S3Client {
-  return new S3Client({
-    region: "auto",
-    endpoint: process.env.R2_ENDPOINT_URL!,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-    },
-  });
-}
-
-const BUCKET = process.env.R2_BUCKET_NAME ?? "mike";
+const BUCKET = process.env.SUPABASE_BUCKET_NAME ?? "mike";
 
 export const storageEnabled = Boolean(
-  process.env.R2_ENDPOINT_URL &&
-  process.env.R2_ACCESS_KEY_ID &&
-  process.env.R2_SECRET_ACCESS_KEY,
+  process.env.SUPABASE_URL && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
 );
 
 // ---------------------------------------------------------------------------
@@ -45,15 +24,17 @@ export async function uploadFile(
   content: ArrayBuffer,
   contentType: string,
 ): Promise<void> {
-  const client = getClient();
-  await client.send(
-    new PutObjectCommand({
-      Bucket: BUCKET,
-      Key: key,
-      Body: Buffer.from(content),
-      ContentType: contentType,
-    }),
-  );
+  const supabase = createServerSupabase();
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(key, content, {
+      contentType,
+      upsert: true,
+    });
+  if (error) {
+    console.error(`[storage] upload error for ${key}:`, error);
+    throw error;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -63,14 +44,12 @@ export async function uploadFile(
 export async function downloadFile(key: string): Promise<ArrayBuffer | null> {
   if (!storageEnabled) return null;
   try {
-    const client = getClient();
-    const response = await client.send(
-      new GetObjectCommand({ Bucket: BUCKET, Key: key }),
-    );
-    if (!response.Body) return null;
-    const bytes = await response.Body.transformToByteArray();
-    return bytes.buffer as ArrayBuffer;
-  } catch {
+    const supabase = createServerSupabase();
+    const { data, error } = await supabase.storage.from(BUCKET).download(key);
+    if (error || !data) return null;
+    return await data.arrayBuffer();
+  } catch (err) {
+    console.error(`[storage] download error for ${key}:`, err);
     return null;
   }
 }
@@ -81,12 +60,16 @@ export async function downloadFile(key: string): Promise<ArrayBuffer | null> {
 
 export async function deleteFile(key: string): Promise<void> {
   if (!storageEnabled) return;
-  const client = getClient();
-  await client.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: key }));
+  const supabase = createServerSupabase();
+  const { error } = await supabase.storage.from(BUCKET).remove([key]);
+  if (error) {
+    console.error(`[storage] delete error for ${key}:`, error);
+    throw error;
+  }
 }
 
 // ---------------------------------------------------------------------------
-// Signed URL (pre-signed for temporary direct access)
+// Signed URL
 // ---------------------------------------------------------------------------
 
 export async function getSignedUrl(
@@ -96,48 +79,34 @@ export async function getSignedUrl(
 ): Promise<string | null> {
   if (!storageEnabled) return null;
   try {
-    const client = getClient();
-    // Override the response Content-Disposition so the browser uses this
-    // filename on download, instead of the last path segment of the R2 key
-    // (which includes the document UUID). The `download` attribute on <a>
-    // is ignored for cross-origin URLs, so we have to set it server-side.
-    const responseContentDisposition = downloadFilename
-      ? buildContentDisposition("attachment", downloadFilename)
-      : undefined;
-    const command = new GetObjectCommand({
-      Bucket: BUCKET,
-      Key: key,
-      ResponseContentDisposition: responseContentDisposition,
-    });
-    return await awsGetSignedUrl(client, command, { expiresIn });
-  } catch {
+    const supabase = createServerSupabase();
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(key, expiresIn, {
+        download: downloadFilename ? normalizeDownloadFilename(downloadFilename) : false
+      });
+    
+    if (error || !data) return null;
+    return data.signedUrl;
+  } catch (err) {
+    console.error(`[storage] signed url error for ${key}:`, err);
     return null;
   }
+}
+
+export function buildContentDisposition(
+  type: "inline" | "attachment",
+  filename: string,
+): string {
+  const escaped = filename.replace(/"/g, '\\"');
+  const encoded = encodeURIComponent(filename).replace(/'/g, "%27");
+  return `${type}; filename="${escaped}"; filename*=UTF-8''${encoded}`;
 }
 
 export function normalizeDownloadFilename(name: string): string {
   const trimmed = name.trim();
   const base = trimmed || "download";
   return base.replace(/[\x00-\x1F\x7F]/g, "_").replace(/[\\/]/g, "_");
-}
-
-export function sanitizeDispositionFilename(name: string): string {
-  return normalizeDownloadFilename(name).replace(/["\\]/g, "_");
-}
-
-export function encodeRFC5987(str: string): string {
-  return encodeURIComponent(str).replace(
-    /['()*]/g,
-    (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase(),
-  );
-}
-
-export function buildContentDisposition(
-  kind: "inline" | "attachment",
-  filename: string,
-): string {
-  const normalized = normalizeDownloadFilename(filename);
-  return `${kind}; filename="${sanitizeDispositionFilename(normalized)}"; filename*=UTF-8''${encodeRFC5987(normalized)}`;
 }
 
 // ---------------------------------------------------------------------------

@@ -277,6 +277,7 @@ export function ProjectPage({ projectId }: Props) {
     const [chats, setChats] = useState<MikeChat[]>([]);
     const [projectReviews, setProjectReviews] = useState<TabularReview[]>([]);
     const [loading, setLoading] = useState(true);
+    const [debugError, setDebugError] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const tabParam = searchParams.get("tab");
     const tab: Tab =
@@ -482,6 +483,11 @@ export function ProjectPage({ projectId }: Props) {
                 setExpandedFolderIds(new Set(loadedFolders.map((f) => f.id)));
                 setChats(projectChats);
                 setProjectReviews(projectReviews);
+                setDebugError(null);
+            })
+            .catch((e) => {
+                console.error("Error loading project:", e);
+                setDebugError(String(e));
             })
             .finally(() => setLoading(false));
     }, [projectId]);
