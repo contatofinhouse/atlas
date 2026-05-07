@@ -286,8 +286,8 @@ export function EditCard({
                 versionId: annotation.version_id ?? null,
                 message:
                     verb === "accept"
-                        ? "Couldn't save accept — reverted."
-                        : "Couldn't save reject — reverted.",
+                        ? "Não foi possível salvar a aceitação — revertido."
+                        : "Não foi possível salvar a rejeição — revertido.",
             });
         } finally {
             setBusy(false);
@@ -319,14 +319,14 @@ export function EditCard({
                     disabled={inFlight || resolved}
                     className="px-2 py-1 text-xs rounded border border-gray-900 bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-50"
                 >
-                    {status === "accepted" ? "Accepted" : "Accept"}
+                    {status === "accepted" ? "Aceito" : "Aceitar"}
                 </button>
                 <button
                     onClick={() => handle("reject")}
                     disabled={inFlight || resolved}
                     className="px-2 py-1 text-xs rounded border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                 >
-                    {status === "rejected" ? "Rejected" : "Reject"}
+                    {status === "rejected" ? "Rejeitado" : "Rejeitar"}
                 </button>
                 {onViewClick && (
                     <button
@@ -334,12 +334,12 @@ export function EditCard({
                         disabled={resolved}
                         title={
                             resolved
-                                ? "This change has been resolved and is no longer in the document."
+                                ? "Esta alteração foi resolvida e não está mais no documento."
                                 : undefined
                         }
                         className="ml-auto px-2 py-1 text-xs rounded border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
                     >
-                        View
+                        Visualizar
                     </button>
                 )}
             </div>
