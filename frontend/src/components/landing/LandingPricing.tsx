@@ -8,7 +8,15 @@ import Link from "next/link";
 export function LandingPricing() {
     const [cycle, setCycle] = useState<"monthly" | "quarterly" | "semiannual">("monthly");
 
-    const prices = {
+    interface Plan {
+        label: string;
+        price: string;
+        total: string;
+        billing: string;
+        discount?: string;
+    }
+
+    const prices: Record<"monthly" | "quarterly" | "semiannual", Plan> = {
         monthly: { label: "Mensal", price: "197", total: "/mês", billing: "Cobrado mensalmente" },
         quarterly: { label: "Trimestral", price: "177", total: "/mês", billing: "R$ 531 cobrado a cada 3 meses", discount: "10% OFF" },
         semiannual: { label: "Semestral", price: "157", total: "/mês", billing: "R$ 942 cobrado a cada 6 meses", discount: "20% OFF" },
