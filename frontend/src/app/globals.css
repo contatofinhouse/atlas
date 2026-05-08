@@ -329,6 +329,15 @@
     .animate-shimmer {
         animation: shimmer 8s linear infinite;
     }
+
+    @keyframes slow-zoom {
+        0%, 100% { transform: scale(1.1); }
+        50% { transform: scale(1.15); }
+    }
+
+    .animate-slow-zoom {
+        animation: slow-zoom 30s ease-in-out infinite;
+    }
 }
 
 /* ─── Tiptap WYSIWYG workflow editor ────────────────────────────── */
@@ -406,7 +415,7 @@
 }
 
 .workflow-editor-content em {
-    font-style: italic;
+    font-style: normal;
 }
 
 /* ChatBox Animation Styles */

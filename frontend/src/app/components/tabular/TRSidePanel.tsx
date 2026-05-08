@@ -227,7 +227,7 @@ export function TRSidePanel({
                                 }
                             }}
                             disabled={regenerating}
-                            title="Regenerar"
+                            title="Regerar"
                             className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 disabled:opacity-40"
                         >
                             {regenerating ? (
@@ -332,7 +332,7 @@ function CitationBadge({
             type="button"
             data-page={citation.page}
             data-quote={citation.quote}
-            title={`Page ${citation.page}: "${citation.quote}"`}
+            title={`Página ${citation.page}: "${citation.quote}"`}
             onClick={() =>
                 onClick({ quote: citation.quote, page: citation.page })
             }
@@ -398,7 +398,7 @@ function MarkdownContent({
                     <strong className="font-semibold" {...props} />
                 ),
                 em: ({ node, ...props }) => (
-                    <em className="italic" {...props} />
+                    <em className="not-italic" {...props} />
                 ),
                 a: ({ node, href, children, ...props }) => (
                     <a

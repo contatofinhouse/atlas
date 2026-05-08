@@ -77,7 +77,7 @@ function CellMarkdown({
                 strong: ({ node, ...props }) => (
                     <strong className="font-semibold" {...props} />
                 ),
-                em: ({ node, ...props }) => <em className="italic" {...props} />,
+                em: ({ node, ...props }) => <em className="not-italic" {...props} />,
                 a: ({ node, href, children, ...props }) => (
                     <a
                         href={href}
@@ -98,7 +98,7 @@ function CellMarkdown({
                         if (citation) {
                             return (
                                 <span
-                                    title={`Page ${citation.page}: "${citation.quote}"`}
+                                    title={`Página ${citation.page}: "${citation.quote}"`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (onCitationClick) {

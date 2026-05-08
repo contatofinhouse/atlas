@@ -46,25 +46,27 @@ export function LandingPricing() {
 
                 {/* Cycle Toggles */}
                 <div className="flex justify-center mb-12">
-                    <div className="bg-white p-1 rounded-lg border border-slate-200 inline-flex shadow-sm">
-                        {(["monthly", "quarterly", "semiannual"] as const).map((c) => (
-                            <button
-                                key={c}
-                                onClick={() => setCycle(c)}
-                                className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                                    cycle === c
-                                        ? "bg-slate-900 text-white shadow-md"
-                                        : "text-slate-600 hover:text-slate-900"
-                                }`}
-                            >
-                                {prices[c].label}
-                                {prices[c].discount && (
-                                    <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded uppercase">
-                                        {prices[c].discount}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
+                    <div className="max-w-full overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
+                        <div className="bg-white p-1 rounded-lg border border-slate-200 inline-flex shadow-sm whitespace-nowrap">
+                            {(["monthly", "quarterly", "semiannual"] as const).map((c) => (
+                                <button
+                                    key={c}
+                                    onClick={() => setCycle(c)}
+                                    className={`px-4 sm:px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                                        cycle === c
+                                            ? "bg-slate-900 text-white shadow-md"
+                                            : "text-slate-600 hover:text-slate-900"
+                                    }`}
+                                >
+                                    {prices[c].label}
+                                    {prices[c].discount && (
+                                        <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded uppercase">
+                                            {prices[c].discount}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

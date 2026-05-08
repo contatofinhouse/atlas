@@ -6,6 +6,7 @@ interface SiteLogoProps {
     className?: string;
     animate?: boolean;
     asLink?: boolean;
+    invert?: boolean;
 }
 
 export function SiteLogo({
@@ -13,6 +14,7 @@ export function SiteLogo({
     className = "",
     animate = false,
     asLink = false,
+    invert = false,
 }: SiteLogoProps) {
     const landingHref =
         process.env.NODE_ENV === "production"
@@ -35,11 +37,17 @@ export function SiteLogo({
     const logo = (
         <h1
             className={`flex items-center gap-1.5 ${sizeClasses[size]} font-light font-serif ${
-                animate ? "sidebar-fade-in" : ""
-            } ${className}`}
+                invert ? "text-white" : "text-slate-900"
+            } ${animate ? "sidebar-fade-in" : ""} ${className}`}
         >
-            <LukaIcon size={iconSizes[size]} spin={animate} />
-            <span className="tracking-tight">Luka<span className="font-medium">Lex</span></span>
+            <LukaIcon 
+                size={iconSizes[size]} 
+                spin={animate} 
+                variant={invert ? "white" : "emerald"} 
+            />
+            <span className="tracking-tight">
+                Luka<span className="font-medium">Lex</span>
+            </span>
         </h1>
     );
 

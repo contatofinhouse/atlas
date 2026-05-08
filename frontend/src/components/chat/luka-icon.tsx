@@ -9,7 +9,7 @@ export function LukaIcon({
     style,
 }: {
     spin?: boolean;
-    variant?: "emerald" | "gray";
+    variant?: "emerald" | "gray" | "white";
     size?: number;
     style?: React.CSSProperties;
 }) {
@@ -25,6 +25,11 @@ export function LukaIcon({
             outer: "#475569", // Slate 600
             inner: "#64748b", // Slate 500
             core: "#334155"  // Slate 700
+        },
+        white: {
+            outer: "#ffffff",
+            inner: "#e2e8f0",
+            core: "#ffffff"
         }
     };
 

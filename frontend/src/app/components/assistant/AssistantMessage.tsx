@@ -920,7 +920,7 @@ function MarkdownContent({
                         <strong className="font-semibold" {...props} />
                     ),
                     em: ({ node, ...props }) => (
-                        <em className="italic" {...props} />
+                        <em className="not-italic" {...props} />
                     ),
                     code: ({ node, children, ...props }) => {
                         const text = String(children);
@@ -958,7 +958,7 @@ function MarkdownContent({
                     },
                     blockquote: ({ node, ...props }) => (
                         <blockquote
-                            className="border-l-4 border-gray-300 pl-4 italic my-4"
+                            className="border-l-4 border-gray-300 pl-4 not-italic my-4"
                             {...props}
                         />
                     ),

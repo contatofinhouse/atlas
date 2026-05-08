@@ -223,7 +223,7 @@ export function TRView({ reviewId, projectId }: Props) {
                     : null,
             );
         } catch (err) {
-            console.error("Regeneration failed", err);
+            console.error("Falha na regeneração", err);
             setCells((prev) =>
                 prev.map((c) =>
                     c.document_id === docId && c.column_index === colIndex
@@ -320,7 +320,7 @@ export function TRView({ reviewId, projectId }: Props) {
                 }
             }
         } catch (err) {
-            console.error("Generation failed", err);
+            console.error("Falha na execução", err);
         } finally {
             setGenerating(false);
         }
@@ -381,7 +381,7 @@ export function TRView({ reviewId, projectId }: Props) {
                         ),
                 ),
             );
-            console.error("Failed to save column", err);
+            console.error("Falha ao salvar coluna", err);
         } finally {
             setSavingColumn(false);
         }
@@ -397,7 +397,7 @@ export function TRView({ reviewId, projectId }: Props) {
             await saveColumnsConfig(nextColumns);
         } catch (err) {
             setColumns(previousColumns);
-            console.error("Failed to update column", err);
+            console.error("Falha ao atualizar coluna", err);
         }
     }
 
@@ -411,7 +411,7 @@ export function TRView({ reviewId, projectId }: Props) {
             await saveColumnsConfig(nextColumns);
         } catch (err) {
             setColumns(previousColumns);
-            console.error("Failed to delete column", err);
+            console.error("Falha ao excluir coluna", err);
         }
     }
 
@@ -569,7 +569,7 @@ export function TRView({ reviewId, projectId }: Props) {
                                     });
                                 }}
                                 disabled={columns.length === 0 || documents.length === 0}
-                                title={profile?.tier === "Free" ? "Disponível no Plano Pro" : "Export to Excel"}
+                                title={profile?.tier === "Free" ? "Disponível no Plano Pro" : "Exportar para Excel"}
                                 className={`flex h-8 items-center justify-center gap-1.5 px-3 text-sm transition-colors ${
                                     columns.length === 0 || documents.length === 0
                                         ? "text-gray-300 cursor-default"

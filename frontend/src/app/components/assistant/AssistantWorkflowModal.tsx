@@ -254,7 +254,7 @@ export function AssistantWorkflowModal({
                                             </strong>
                                         ),
                                         em: ({ children }) => (
-                                            <em className="italic">
+                                            <em className="not-italic">
                                                 {children}
                                             </em>
                                         ),

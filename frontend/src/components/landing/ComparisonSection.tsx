@@ -48,11 +48,11 @@ export function ComparisonSection() {
                     </p>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                <div className="overflow-x-auto -mx-6 px-6">
+                    <table className="w-full border-collapse min-w-[500px]">
                         <thead>
                             <tr className="border-b border-slate-200">
-                                <th className="py-6 px-4 text-left font-medium text-slate-900">Diferencial</th>
+                                <th className="py-6 px-4 text-left font-medium text-slate-900 w-1/2">Diferencial</th>
                                 <th className="py-6 px-4 text-center font-medium text-slate-900 bg-slate-50/50">LukaLex IA</th>
                                 <th className="py-6 px-4 text-center font-medium text-slate-500">IAs Genéricas</th>
                             </tr>

@@ -156,12 +156,8 @@ function MarkdownBody({ content }: { content: string }) {
                     </ol>
                 ),
                 li: ({ children }) => <li>{children}</li>,
-                strong: ({ children }) => (
-                    <strong className="font-semibold text-gray-800">
-                        {children}
-                    </strong>
-                ),
-                em: ({ children }) => <em className="italic">{children}</em>,
+                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                em: ({ children }) => <em className="not-italic">{children}</em>,
             }}
         >
             {content}
