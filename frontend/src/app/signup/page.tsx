@@ -260,7 +260,7 @@ export default function SignupPage() {
                             href="https://mikeoss.com/terms"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                            className="text-gray-900 hover:underline"
                         >
                             Termos de Uso
                         </Link>{" "}
@@ -269,9 +269,9 @@ export default function SignupPage() {
                             href="https://mikeoss.com/privacy"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                            className="text-gray-900 hover:underline"
                         >
-                            Política de Privacidade
+                            Política de Privacidade (LGPD)
                         </Link>
                     </div>
                 </div>

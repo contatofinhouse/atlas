@@ -9,6 +9,7 @@ import { tabularRouter } from "./routes/tabular";
 import { workflowsRouter } from "./routes/workflows";
 import { userRouter } from "./routes/user";
 import { downloadsRouter } from "./routes/downloads";
+import stripeRouter from "./routes/stripe";
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -25,6 +26,8 @@ app.use(
   }),
 );
 
+app.use("/stripe", stripeRouter);
+
 app.use(express.json({ limit: "50mb" }));
 
 app.use("/chat", chatRouter);
@@ -40,5 +43,5 @@ app.use("/download", downloadsRouter);
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
-  console.log(`Mike backend running on port ${PORT}`);
+  console.log(`LucaLex backend running on port ${PORT}`);
 });

@@ -11,8 +11,8 @@ import {
     type ChatMessage,
 } from "../lib/chatTools";
 import { completeText } from "../lib/llm";
-import { getUserApiKeys, getUserModelSettings } from "../lib/userSettings";
 import { checkProjectAccess } from "../lib/access";
+import { getUserTierInfo, incrementUsage, resolveSmartModel, FREE_TIER_LIMIT } from "../lib/tierLimit";
 
 export const chatRouter = Router();
 
@@ -320,8 +320,16 @@ chatRouter.post("/", requireAuth, async (req, res) => {
         messages: ChatMessage[];
         chat_id?: string;
         project_id?: string;
-        model?: string;
+        model?: string; // We'll ignore this in favor of smart routing
     };
+
+    const tierInfo = await getUserTierInfo(userId);
+    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+        return void res.status(402).json({ 
+            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
+            code: "LIMIT_REACHED"
+        });
+    }
 
     console.log("[chat/stream] incoming request", {
         userId,
@@ -434,7 +442,14 @@ chatRouter.post("/", requireAuth, async (req, res) => {
 
     const write = (line: string) => res.write(line);
 
-    const apiKeys = await getUserApiKeys(userId, db);
+    // Rollout: Always use system API keys (ignore user-provided keys)
+    const apiKeys = { claude: null, gemini: null };
+
+    const resolvedModel = resolveSmartModel({
+        messages: enrichedMessages,
+        hasWorkflow: messages.some(m => m.workflow),
+        docCount: Object.keys(docIndex).length
+    });
 
     try {
         write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
@@ -447,10 +462,13 @@ chatRouter.post("/", requireAuth, async (req, res) => {
             db,
             write,
             workflowStore,
-            model,
+            model: resolvedModel,
             apiKeys,
             projectId: project_id ?? null,
         });
+
+        // Increment usage after successful IA action
+        await incrementUsage(userId);
 
         console.log("[chat/stream] LLM stream finished", {
             fullTextLen: fullText?.length ?? 0,

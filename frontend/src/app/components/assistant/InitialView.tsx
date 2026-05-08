@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { MikeIcon } from "@/components/chat/mike-icon";
+import { LukaIcon } from "@/components/chat/luka-icon";
 import { ChatInput } from "./ChatInput";
 import { SelectAssistantProjectModal } from "./SelectAssistantProjectModal";
 import type { MikeMessage } from "../shared/types";
@@ -44,32 +44,10 @@ export function InitialView({ onSubmit }: InitialViewProps) {
         <div className="flex flex-col h-full w-full px-6">
             <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="flex-col items-center w-full max-w-4xl relative px-0 xl:px-8">
-                    <div className="mb-10 relative flex items-center justify-center">
-                        <div
-                            className="absolute h-[35px]"
-                            style={{
-                                left: "50%",
-                                transform: loaded
-                                    ? `translateX(calc(-50% - ${iconOffset}px))`
-                                    : "translateX(-50%)",
-                                transition:
-                                    "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                            }}
-                        >
-                            <MikeIcon size={ICON_SIZE} />
-                        </div>
+                    <div className="mb-10 flex items-center justify-center gap-4">
+                        <LukaIcon size={ICON_SIZE} spin={true} />
                         <h1
-                            ref={textRef}
-                            className="absolute text-4xl font-serif font-light text-gray-900 whitespace-nowrap"
-                            style={{
-                                left: "50%",
-                                transform: loaded
-                                    ? `translateX(calc(-50% + ${textOffset}px))`
-                                    : "translateX(-50%)",
-                                opacity: loaded ? 1 : 0,
-                                transition:
-                                    "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 800ms ease-in-out 300ms",
-                            }}
+                            className="text-4xl font-serif font-light text-gray-900 whitespace-nowrap"
                         >
                             Olá, {username}
                         </h1>

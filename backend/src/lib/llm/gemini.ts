@@ -28,8 +28,8 @@ type GeminiContent = {
     parts: GeminiPart[];
 };
 
-function client(override?: string | null): GoogleGenAI {
-    const apiKey = override?.trim() || process.env.GEMINI_API_KEY || "";
+function client(_override?: string | null): GoogleGenAI {
+    const apiKey = process.env.GEMINI_API_KEY || "";
     return new GoogleGenAI({ apiKey });
 }
 

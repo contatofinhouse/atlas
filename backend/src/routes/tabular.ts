@@ -17,6 +17,7 @@ import {
     ensureReviewAccess,
     listAccessibleProjectIds,
 } from "../lib/access";
+import { getUserTierInfo, incrementUsage, resolveSmartModel, FREE_TIER_LIMIT } from "../lib/tierLimit";
 
 function formatPromptSuffix(format?: string, tags?: string[]): string {
     switch (format) {
@@ -267,7 +268,14 @@ tabularRouter.post("/prompt", requireAuth, async (req, res) => {
         `format handling is applied separately and must not be duplicated inside the prompt text.`;
 
     try {
-        const { title_model, api_keys } = await getUserModelSettings(userId);
+        const tierInfo = await getUserTierInfo(userId);
+        if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+            return void res.status(402).json({ detail: "Limite atingido", code: "LIMIT_REACHED" });
+        }
+        
+        // Force system keys
+        const api_keys = { claude: null, gemini: null };
+        const title_model = "gemini-3.1-flash-lite-preview";
         const raw = await completeText({
             model: title_model,
             systemPrompt:
@@ -283,6 +291,7 @@ tabularRouter.post("/prompt", requireAuth, async (req, res) => {
                 .trim(),
         ) as { prompt?: unknown };
         if (typeof parsed.prompt === "string" && parsed.prompt.trim()) {
+            await incrementUsage(userId);
             res.json({ prompt: parsed.prompt.trim(), source: "llm" });
         } else {
             res.status(502).json({ detail: "LLM returned an empty prompt" });
@@ -691,10 +700,14 @@ tabularRouter.post(
             }
         }
 
-        const { tabular_model, api_keys } = await getUserModelSettings(
-            userId,
-            db,
-        );
+        const tierInfo = await getUserTierInfo(userId);
+        if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+            return void res.status(402).json({ detail: "Limite atingido", code: "LIMIT_REACHED" });
+        }
+
+        // Force system keys
+        const api_keys = { claude: null, gemini: null };
+        const tabular_model = resolveSmartModel({ messages: [], docCount: 1 });
         const result = await queryGemini(
             tabular_model,
             doc.filename as string,
@@ -721,6 +734,8 @@ tabularRouter.post(
             .eq("review_id", reviewId)
             .eq("document_id", document_id)
             .eq("column_index", column_index);
+
+        await incrementUsage(userId);
 
         res.json(result);
     },
@@ -779,7 +794,23 @@ tabularRouter.post("/:reviewId/generate", requireAuth, async (req, res) => {
         docs = data ?? [];
     }
 
-    const { tabular_model, api_keys } = await getUserModelSettings(userId, db);
+    const tierInfo = await getUserTierInfo(userId);
+    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+        return void res.status(402).json({ 
+            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
+            code: "LIMIT_REACHED"
+        });
+    }
+
+    // Force system keys
+    const api_keys = { claude: null, gemini: null };
+
+    // Smart Routing for Tabular Review
+    const tabular_model = resolveSmartModel({ 
+        messages: [], 
+        hasWorkflow: !!review.workflow_id,
+        docCount: docs.length
+    });
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -1052,7 +1083,7 @@ function buildTabularMessages(
         .map((c, i) => `- COL:${i} "${c.name}"`)
         .join("\n");
 
-    const systemContent = `You are Mike, an AI legal assistant. You are helping with the tabular review titled "${reviewTitle}".
+    const systemContent = `You are Luca, an AI legal assistant. You are helping with the tabular review titled "${reviewTitle}".
 
 The review extracts specific fields from multiple legal documents into a structured table.
 You do NOT have the cell content yet — call read_table_cells to fetch the cells you need before answering.

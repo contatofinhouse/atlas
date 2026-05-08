@@ -28,7 +28,7 @@ import type {
     ColumnConfig,
     MikeDocument,
 } from "../shared/types";
-import { ModelToggle } from "../assistant/ModelToggle";
+
 import { ApiKeyMissingModal } from "../shared/ApiKeyMissingModal";
 import { PreResponseWrapper } from "../shared/PreResponseWrapper";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -492,11 +492,7 @@ function TRChatInput({
                     className="flex-1 resize-none text-sm bg-transparent outline-none placeholder:text-gray-400 leading-6 max-h-48 overflow-y-auto border-0 p-0 pl-3 pr-2 pt-1"
                 />
                 <div className="flex items-center justify-between pl-1 pr-2">
-                    <ModelToggle
-                        value={model}
-                        onChange={onModelChange}
-                        apiKeys={apiKeys}
-                    />
+
                     <button
                         type="button"
                         onClick={handleAction}

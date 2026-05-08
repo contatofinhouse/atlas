@@ -27,6 +27,7 @@ import { ToolbarTabs } from "../shared/ToolbarTabs";
 import { RowActions } from "../shared/RowActions";
 import { MikeIcon } from "@/components/chat/mike-icon";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 type Tab = "all" | "builtin" | "custom" | "hidden";
 
@@ -43,6 +44,8 @@ const TABS: { id: Tab; label: string }[] = [
 export function WorkflowList() {
     const router = useRouter();
     const { user } = useAuth();
+    const { profile } = useUserProfile();
+    const isFree = profile?.tier === "Free";
     const [custom, setCustom] = useState<MikeWorkflow[]>([]);
     const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState<MikeWorkflow | null>(null);
@@ -369,8 +372,15 @@ export function WorkflowList() {
                         placeholder="Buscar modelos…"
                     />
                     <button
-                        onClick={() => setNewModalOpen(true)}
-                        className="flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-900 transition-colors"
+                        onClick={() => {
+                            if (isFree) {
+                                alert("Criação de modelos customizados disponível apenas no Plano Pro.");
+                                return;
+                            }
+                            setNewModalOpen(true);
+                        }}
+                        className={`flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-900 transition-colors ${isFree ? "opacity-50" : ""}`}
+                        title={isFree ? "Disponível no Plano Pro" : "Criar Novo Modelo"}
                     >
                         <Plus className="h-4 w-4" />
                     </button>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MikeIcon } from "@/components/chat/mike-icon";
+import { LukaIcon } from "@/components/chat/luka-icon";
 
 interface SiteLogoProps {
     size?: "sm" | "md" | "lg" | "xl";
@@ -38,8 +38,8 @@ export function SiteLogo({
                 animate ? "sidebar-fade-in" : ""
             } ${className}`}
         >
-            <MikeIcon size={iconSizes[size]} />
-            <span>Mike</span>
+            <LukaIcon size={iconSizes[size]} spin={animate} />
+            <span className="tracking-tight">Luka<span className="font-medium">Lex</span></span>
         </h1>
     );
 

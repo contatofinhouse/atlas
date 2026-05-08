@@ -536,35 +536,45 @@ export function TRView({ reviewId, projectId }: Props) {
                             <HeaderSearchBtn value={search} onChange={setSearch} placeholder="Buscar documentos…" />
                             {!projectId && (
                                 <button
-                                    onClick={() => setPeopleModalOpen(true)}
+                                    onClick={() => {
+                                        if (profile?.tier === "Free") {
+                                            alert("Compartilhamento disponível apenas no Plano Pro.");
+                                            return;
+                                        }
+                                        setPeopleModalOpen(true);
+                                    }}
                                     disabled={loading}
                                     className={`flex h-8 w-8 items-center justify-center text-sm transition-colors ${
                                         loading
                                             ? "text-gray-300 cursor-default"
                                             : "text-gray-500 hover:text-gray-900 cursor-pointer"
-                                    }`}
-                                    title="Pessoas com acesso"
+                                    } ${profile?.tier === "Free" ? "opacity-50" : ""}`}
+                                    title={profile?.tier === "Free" ? "Disponível no Plano Pro" : "Pessoas com acesso"}
                                     aria-label="Pessoas com acesso"
                                 >
                                     <Users className="h-4 w-4" />
                                 </button>
                             )}
                             <button
-                                onClick={() =>
+                                onClick={() => {
+                                    if (profile?.tier === "Free") {
+                                        alert("Recurso disponível apenas no Plano Pro.");
+                                        return;
+                                    }
                                     exportTabularReviewToExcel({
                                         reviewTitle: review?.title || "Análise Tabular",
                                         columns,
                                         documents,
                                         cells,
-                                    })
-                                }
+                                    });
+                                }}
                                 disabled={columns.length === 0 || documents.length === 0}
-                                title="Export to Excel"
+                                title={profile?.tier === "Free" ? "Disponível no Plano Pro" : "Export to Excel"}
                                 className={`flex h-8 items-center justify-center gap-1.5 px-3 text-sm transition-colors ${
                                     columns.length === 0 || documents.length === 0
                                         ? "text-gray-300 cursor-default"
                                         : "text-gray-700 hover:text-gray-900 cursor-pointer"
-                                }`}
+                                } ${profile?.tier === "Free" ? "opacity-50" : ""}`}
                             >
                                 <Download className="h-4 w-4" />
                                 Exportar

@@ -21,6 +21,7 @@ interface UserProfile {
     tabularModel: string;
     claudeApiKey: string | null;
     geminiApiKey: string | null;
+    stripeCustomerId: string | null;
 }
 
 interface UserProfileContextType {
@@ -77,6 +78,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                     tabularModel: "gemini-3-flash-preview",
                     claudeApiKey: null,
                     geminiApiKey: null,
+                    stripeCustomerId: null,
                 });
                 return;
             }
@@ -111,6 +113,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                         data.tabular_model || "gemini-3-flash-preview",
                     claudeApiKey: data.claude_api_key ?? null,
                     geminiApiKey: data.gemini_api_key ?? null,
+                    stripeCustomerId: data.stripe_customer_id ?? null,
                 });
 
                 // 2. Update database in background if needed
@@ -148,6 +151,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                 tabularModel: "gemini-3-flash-preview",
                 claudeApiKey: null,
                 geminiApiKey: null,
+                stripeCustomerId: null,
             });
         } finally {
             setLoading(false);

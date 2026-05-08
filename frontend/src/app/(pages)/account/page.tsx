@@ -21,6 +21,7 @@ export default function AccountPage() {
     const [orgSaved, setOrgSaved] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isManagingSubscription, setIsManagingSubscription] = useState(false);
 
     useEffect(() => {
         if (profile?.displayName) {
@@ -72,6 +73,32 @@ export default function AccountPage() {
             setTimeout(() => setOrgSaved(false), 2000);
         } else {
             alert("Falha ao atualizar a organização. Tente novamente.");
+        }
+    };
+
+    const handleManageSubscription = async () => {
+        if (!profile?.stripeCustomerId) return;
+        setIsManagingSubscription(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/stripe/create-portal-session`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    stripeCustomerId: profile.stripeCustomerId,
+                }),
+            });
+            const data = await response.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error(data.error || "Erro ao abrir portal");
+            }
+        } catch (err) {
+            console.error("Portal error:", err);
+            alert("Erro ao abrir o portal de gerenciamento. Tente novamente.");
+            setIsManagingSubscription(false);
         }
     };
 
@@ -170,10 +197,20 @@ export default function AccountPage() {
                         Plano de Uso
                     </h2>
                 </div>
-                <div>
+                <div className="flex items-center justify-between">
                     <p className="text-base font-medium text-gray-500 capitalize">
                         {profile?.tier === "Free" ? "Grátis" : profile?.tier || "Grátis"}
                     </p>
+                    {profile?.tier === "Pro" && profile?.stripeCustomerId && (
+                        <Button
+                            variant="outline"
+                            onClick={handleManageSubscription}
+                            disabled={isManagingSubscription}
+                            className="text-xs"
+                        >
+                            {isManagingSubscription ? "Abrindo..." : "Gerenciar Assinatura"}
+                        </Button>
+                    )}
                 </div>
             </div>
 

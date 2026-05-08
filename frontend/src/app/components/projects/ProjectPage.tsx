@@ -63,6 +63,7 @@ import { UploadNewVersionModal } from "@/app/components/shared/UploadNewVersionM
 import { DocViewModal } from "@/app/components/shared/DocViewModal";
 import { AddNewTRModal } from "@/app/components/tabular/AddNewTRModal";
 import { useChatHistoryContext } from "@/app/contexts/ChatHistoryContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 interface Props {
     projectId: string;
@@ -272,6 +273,8 @@ function DocVersionHistory({
 }
 
 export function ProjectPage({ projectId }: Props) {
+    const { profile } = useUserProfile();
+    const isFree = profile?.tier === "Free";
     const [project, setProject] = useState<MikeProject | null>(null);
     const [folders, setFolders] = useState<MikeFolder[]>([]);
     const [chats, setChats] = useState<MikeChat[]>([]);
@@ -1283,9 +1286,17 @@ export function ProjectPage({ projectId }: Props) {
                 <div className="flex items-center gap-2">
                     <HeaderSearchBtn value={search} onChange={setSearch} placeholder="Buscar…" />
                     <button
-                        onClick={() => setPeopleModalOpen(true)}
-                        className="flex h-8 w-8 items-center justify-center text-sm text-gray-500 transition-colors hover:text-gray-900 cursor-pointer"
-                        title="Pessoas com acesso"
+                        onClick={() => {
+                            if (isFree) {
+                                alert("Compartilhamento disponível apenas no Plano Pro.");
+                                return;
+                            }
+                            setPeopleModalOpen(true);
+                        }}
+                        className={`flex h-8 w-8 items-center justify-center text-sm transition-colors ${
+                            isFree ? "opacity-50" : "text-gray-500 hover:text-gray-900 cursor-pointer"
+                        }`}
+                        title={isFree ? "Disponível no Plano Pro" : "Pessoas com acesso"}
                         aria-label="Pessoas com acesso"
                     >
                         <Users className="h-4 w-4" />

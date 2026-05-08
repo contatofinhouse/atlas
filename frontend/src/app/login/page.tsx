@@ -117,6 +117,9 @@ export default function LoginPage() {
                         >
                             {loading ? "Entrando..." : "Entrar"}
                         </Button>
+                        <p className="mt-6 text-center text-[10px] text-gray-400 leading-relaxed">
+                            Ao entrar, você concorda com nossos <a href="#" className="underline hover:text-gray-600">Termos de Uso</a> e <a href="#" className="underline hover:text-gray-600">Política de Privacidade (LGPD)</a>.
+                        </p>
                     </form>
                 </div>
             </div>

@@ -10,13 +10,16 @@ import {
     User,
     ChevronsUpDown,
     ChevronDown,
+    Sparkles,
+    MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { UpgradeModal } from "./UpgradeModal";
 import { useChatHistoryContext } from "@/app/contexts/ChatHistoryContext";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { MikeIcon } from "@/components/chat/mike-icon";
+import { LukaIcon } from "@/components/chat/luka-icon";
 import { SidebarChatItem } from "@/app/components/shared/SidebarChatItem";
 import { listProjects } from "@/app/lib/mikeApi";
 
@@ -39,6 +42,7 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
     const router = useRouter();
     const pathname = usePathname();
     const [shouldAnimate, setShouldAnimate] = useState(false);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [historyCollapsed, setHistoryCollapsed] = useState(false);
     const [projectNames, setProjectNames] = useState<Record<string, string>>(
@@ -127,13 +131,13 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                             href="/assistant"
                             className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
                         >
-                            <MikeIcon size={22} />
+                            <LukaIcon size={22} spin={shouldAnimate} />
                             <span
                                 className={`text-2xl font-light font-serif ${
                                     shouldAnimate ? "sidebar-fade-in" : ""
                                 }`}
                             >
-                                Mike
+                                Luka
                             </span>
                         </Link>
                     </div>
@@ -251,6 +255,32 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                     </div>
                 </div>
             )}
+            
+            {/* Promo / Support Items */}
+            <div className="mt-4 px-2.5 space-y-1">
+                {profile?.tier === "Free" && (
+                    <button
+                        onClick={() => setIsUpgradeModalOpen(true)}
+                        className={`w-full h-9 flex items-center gap-3 px-2.5 py-2 rounded-md transition-all text-left bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 ${!isOpen ? "hidden md:flex justify-center px-0" : "flex"}`}
+                        title={!isOpen ? "Seja Pro" : ""}
+                    >
+                        <LukaIcon size={16} />
+                        {isOpen && (
+                            <span className="text-sm font-medium">Seja Pro</span>
+                        )}
+                    </button>
+                )}
+                <button
+                    onClick={() => window.open("https://wa.me/5511955842951", "_blank")}
+                    className={`w-full h-9 flex items-center gap-3 px-2.5 py-2 rounded-md transition-colors text-left text-gray-700 hover:bg-gray-100 ${!isOpen ? "hidden md:flex justify-center px-0" : "flex"}`}
+                    title={!isOpen ? "Suporte" : ""}
+                >
+                    <MessageCircle className="h-4 w-4 shrink-0 text-black" />
+                    {isOpen && (
+                        <span className="text-sm font-medium">Suporte</span>
+                    )}
+                </button>
+            </div>
 
             {/* User Profile */}
             <div className="mt-auto">
@@ -306,6 +336,11 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                     </div>
                 )}
             </div>
+
+            <UpgradeModal 
+                isOpen={isUpgradeModalOpen} 
+                onClose={() => setIsUpgradeModalOpen(false)} 
+            />
         </div>
     );
 }
