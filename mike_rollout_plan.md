@@ -26,6 +26,8 @@ Este documento reflete o progresso real e as etapas críticas restantes para o l
 - [x] **Refinamento de Conversão:** Reordenação estratégica do Sidebar (Suporte e Seja Pro).
 - [x] **Fechamento de Brechas:** Créditos agora são contados corretamente em chats de projeto e gerações em lote.
 - [x] **Estabilidade UI:** Correção de loops de renderização e erros de tipagem.
+- [ ] **QA de Traduções:** Revisão final de todos os textos em pt-BR (Modais e Workflows).
+- [ ] **Stress Test de Limites:** Validar se o bloqueio de 20 ações/mês funciona em todos os cenários (Chat, Projetos, Tabular).
 
 ---
 
@@ -56,5 +58,6 @@ Este documento reflete o progresso real e as etapas críticas restantes para o l
 ---
 
 ## 4. Próximos Passos Imediatos
-1. Gerar os arquivos Docker para teste local.
-2. Iniciar o provisionamento da Oracle Cloud.
+1. Testar exaustivamente o bloqueio de Tier Limit em conta Free.
+2. Revisar traduções de novos modais e botões.
+3. Gerar os arquivos Docker para teste local.
