@@ -8,24 +8,22 @@ export function getModelProvider(modelId: string): ModelProvider | null {
     return model.group === "Anthropic" ? "claude" : "gemini";
 }
 
+/**
+ * All models are always available — API keys are global on the server (.env).
+ * Users do NOT need to provide their own keys.
+ */
 export function isModelAvailable(
-    modelId: string,
-    apiKeys: { claudeApiKey: string | null; geminiApiKey: string | null },
+    _modelId: string,
+    _apiKeys?: unknown,
 ): boolean {
-    const provider = getModelProvider(modelId);
-    if (!provider) return false;
-    return provider === "claude"
-        ? !!apiKeys.claudeApiKey?.trim()
-        : !!apiKeys.geminiApiKey?.trim();
+    return true;
 }
 
 export function isProviderAvailable(
-    provider: ModelProvider,
-    apiKeys: { claudeApiKey: string | null; geminiApiKey: string | null },
+    _provider: ModelProvider,
+    _apiKeys?: unknown,
 ): boolean {
-    return provider === "claude"
-        ? !!apiKeys.claudeApiKey?.trim()
-        : !!apiKeys.geminiApiKey?.trim();
+    return true;
 }
 
 export function providerLabel(provider: ModelProvider): string {

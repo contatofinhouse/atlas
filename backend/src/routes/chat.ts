@@ -13,6 +13,7 @@ import {
 import { completeText } from "../lib/llm";
 import { checkProjectAccess } from "../lib/access";
 import { getUserTierInfo, incrementUsage, resolveSmartModel, FREE_TIER_LIMIT } from "../lib/tierLimit";
+import { getUserModelSettings } from "../lib/userSettings";
 
 export const chatRouter = Router();
 
@@ -294,7 +295,7 @@ chatRouter.post("/:chatId/generate-title", requireAuth, async (req, res) => {
         );
         const titleText = await completeText({
             model: title_model,
-            user: `Generate a concise title (3–6 words) for a chat in an AI Legal Platform that starts with this message. The title should describe the topic or document — do NOT include words like "Legal Assistant", "AI", "Chat", or any similar prefix. Return only the title, no quotes or punctuation.\n\nMessage: ${message.slice(0, 500)}`,
+            user: `Gere um título conciso (3–6 palavras) em português brasileiro para um chat em uma Plataforma Jurídica de IA que começa com esta mensagem. O título deve descrever o tópico ou documento — NÃO inclua palavras como "Assistente", "IA", "Chat", ou qualquer prefixo similar. Retorne apenas o título, sem aspas ou pontuação.\n\nMensagem: ${message.slice(0, 500)}`,
             maxTokens: 64,
             apiKeys: api_keys,
         });
@@ -397,27 +398,45 @@ chatRouter.post("/", requireAuth, async (req, res) => {
 
     console.log("[chat/stream] resolved chatId", chatId);
 
-    const lastUser = [...messages].reverse().find((m) => m.role === "user");
-    if (lastUser) {
-        await db.from("chat_messages").insert({
-            chat_id: chatId,
-            role: "user",
-            content: lastUser.content,
-            files: lastUser.files ?? null,
-            workflow: lastUser.workflow ?? null,
-        });
-    }
+    // -------------------------------------------------------------------------
+    // STREAM EARLY: Send headers and chat_id immediately to keep UI responsive
+    // -------------------------------------------------------------------------
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
 
-    const { docIndex, docStore } = await buildDocContext(
-        messages,
-        userId,
-        db,
-        chatId,
-    );
+    const write = (line: string) => res.write(line);
+    write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
+
+    // -------------------------------------------------------------------------
+    // PARALLEL SETUP: Load documents, workflows, and save user message in parallel
+    // -------------------------------------------------------------------------
+    const lastUser = [...messages].reverse().find((m) => m.role === "user");
+
+    const [contextData, workflowStore] = await Promise.all([
+        buildDocContext(messages, userId, db, chatId),
+        buildWorkflowStore(userId, userEmail, db),
+        lastUser
+            ? db.from("chat_messages").insert({
+                  chat_id: chatId,
+                  role: "user",
+                  content: lastUser.content,
+                  files: lastUser.files ?? null,
+                  workflow: lastUser.workflow ?? null,
+              })
+            : Promise.resolve(null),
+    ]);
+
+    const { docIndex, docStore } = contextData;
+
     const docAvailability = Object.entries(docIndex).map(([doc_id, info]) => ({
         doc_id,
         filename: info.filename,
     }));
+
+    // enrichment needs docIndex, so it follows the context build
     const enrichedMessages = await enrichWithPriorEvents(
         messages,
         chatId,
@@ -426,21 +445,11 @@ chatRouter.post("/", requireAuth, async (req, res) => {
     );
     const apiMessages = buildMessages(enrichedMessages, docAvailability);
 
-    const workflowStore = await buildWorkflowStore(userId, userEmail, db);
-
     console.log("[chat/stream] starting LLM stream", {
         apiMessageCount: apiMessages.length,
         docCount: Object.keys(docIndex).length,
         workflowCount: Object.keys(workflowStore).length,
     });
-
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-    res.setHeader("X-Accel-Buffering", "no");
-    res.flushHeaders();
-
-    const write = (line: string) => res.write(line);
 
     // Rollout: Always use system API keys (ignore user-provided keys)
     const apiKeys = { claude: null, gemini: null };
@@ -452,7 +461,6 @@ chatRouter.post("/", requireAuth, async (req, res) => {
     });
 
     try {
-        write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
 
         const { fullText, events } = await runLLMStream({
             apiMessages,

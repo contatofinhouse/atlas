@@ -75,7 +75,7 @@ export function NewWorkflowModal({ open, onClose, onCreated, editWorkflow, onUpd
             resetForm();
             onClose();
         } catch (err: unknown) {
-            setError((err as Error).message || `Failed to ${isEditing ? "update" : "create"} workflow`);
+            setError((err as Error).message || `Falha ao ${isEditing ? "atualizar" : "criar"} o modelo`);
         } finally {
             setLoading(false);
         }

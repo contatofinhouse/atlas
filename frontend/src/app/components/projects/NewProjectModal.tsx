@@ -51,13 +51,17 @@ export function NewProjectModal({ open, onClose, onCreated }: Props) {
                 cmNumber.trim() || undefined,
                 sharedEmails,
             );
-            await Promise.all([
-                ...[...selectedDocIds].map((id) => addDocumentToProject(project.id, id).catch(() => {})),
-                ...pendingFiles.map((f) => uploadProjectDocument(project.id, f).catch(() => {})),
-            ]);
+            
+            // Notification and closure happens immediately so the UI doesn't feel stuck
             onCreated({ ...project, document_count: selectedDocIds.size + pendingFiles.length });
             resetForm();
             onClose();
+
+            // File operations continue in the background
+            Promise.all([
+                ...[...selectedDocIds].map((id) => addDocumentToProject(project.id, id).catch(() => {})),
+                ...pendingFiles.map((f) => uploadProjectDocument(project.id, f).catch(() => {})),
+            ]);
         } catch (err: unknown) {
             setError((err as Error).message || "Falha ao criar o projeto");
         } finally {

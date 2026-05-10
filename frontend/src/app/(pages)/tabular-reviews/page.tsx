@@ -17,6 +17,8 @@ import { ToolbarTabs } from "@/app/components/shared/ToolbarTabs";
 import { AddNewTRModal } from "@/app/components/tabular/AddNewTRModal";
 import { OwnerOnlyModal } from "@/app/components/shared/OwnerOnlyModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTabularData, invalidateTabularCache } from "@/app/hooks/useTabularData";
+import { useDirectoryData } from "@/app/components/shared/useDirectoryData";
 
 type Tab = "all" | "in-project" | "standalone";
 
@@ -38,9 +40,17 @@ function formatDate(iso: string) {
 }
 
 export default function TabularReviewsPage() {
-    const [reviews, setReviews] = useState<TabularReview[]>([]);
-    const [projects, setProjects] = useState<MikeProject[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { 
+        loading: loadingReviews, 
+        reviews, 
+        setReviews 
+    } = useTabularData(true);
+    const { 
+        loading: loadingProjects, 
+        projects 
+    } = useDirectoryData(true);
+    
+    const loading = loadingReviews || (reviews.length > 0 ? false : loadingProjects);
     const [creating, setCreating] = useState(false);
     const [newTROpen, setNewTROpen] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("all");
@@ -56,18 +66,6 @@ export default function TabularReviewsPage() {
     const actionsRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { user } = useAuth();
-
-    useEffect(() => {
-        Promise.all([
-            listTabularReviews().catch(() => []),
-            listProjects().catch(() => []),
-        ])
-            .then(([r, p]) => {
-                setReviews(r);
-                setProjects(p);
-            })
-            .finally(() => setLoading(false));
-    }, []);
 
     useEffect(() => {
         setSelectedIds([]);
@@ -166,6 +164,7 @@ export default function TabularReviewsPage() {
         );
         setRenamingId(null);
         await updateTabularReview(reviewId, { title: trimmed });
+        invalidateTabularCache();
     }
 
     async function handleDeleteSelected() {
@@ -181,6 +180,7 @@ export default function TabularReviewsPage() {
             owned.map((id) => deleteTabularReview(id).catch(() => {})),
         );
         setReviews((prev) => prev.filter((r) => !owned.includes(r.id)));
+        invalidateTabularCache();
         if (blocked > 0) {
             setOwnerOnlyAction(
                 `excluir ${blocked} das análises selecionadas — apenas o criador da análise pode excluí-la`,

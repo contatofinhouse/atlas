@@ -26,15 +26,9 @@ import { AddDocumentsModal } from "../shared/AddDocumentsModal";
 import { AddProjectDocsModal } from "../shared/AddProjectDocsModal";
 import { PeopleModal } from "../shared/PeopleModal";
 import { OwnerOnlyModal } from "../shared/OwnerOnlyModal";
-import { ApiKeyMissingModal } from "../shared/ApiKeyMissingModal";
 import { RenameableTitle } from "../shared/RenameableTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import {
-    getModelProvider,
-    isModelAvailable,
-    type ModelProvider,
-} from "@/app/lib/modelAvailability";
 import { TRSidePanel } from "./TRSidePanel";
 import { TRTable } from "./TRTable";
 import type { TRTableHandle } from "./TRTable";
@@ -49,6 +43,7 @@ interface Props {
 
 export function TRView({ reviewId, projectId }: Props) {
     const { setSidebarOpen } = useSidebar();
+    const { setIsUpgradeModalOpen } = useUserProfile();
     const [review, setReview] = useState<TabularReview | null>(null);
     const [project, setProject] = useState<MikeProject | null>(null);
     const [cells, setCells] = useState<TabularCell[]>([]);
@@ -81,16 +76,10 @@ export function TRView({ reviewId, projectId }: Props) {
             : null,
     );
     const [highlightedCell, setHighlightedCell] = useState<{ colIdx: number; rowIdx: number } | null>(null);
-    const [apiKeyModalProvider, setApiKeyModalProvider] =
-        useState<ModelProvider | null>(null);
     const actionsRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<TRTableHandle>(null);
     const router = useRouter();
     const { profile } = useUserProfile();
-    const apiKeys = {
-        claudeApiKey: profile?.claudeApiKey ?? null,
-        geminiApiKey: profile?.geminiApiKey ?? null,
-    };
     const tabularModel = profile?.tabularModel ?? "gemini-3-flash-preview";
 
     useEffect(() => {
@@ -222,8 +211,11 @@ export function TRView({ reviewId, projectId }: Props) {
                     ? { ...prev, status: "done" as const, content: result }
                     : null,
             );
-        } catch (err) {
+        } catch (err: any) {
             console.error("Falha na regeneração", err);
+            if (err.message && err.message.includes("402")) {
+                setIsUpgradeModalOpen(true);
+            }
             setCells((prev) =>
                 prev.map((c) =>
                     c.document_id === docId && c.column_index === colIndex
@@ -242,11 +234,6 @@ export function TRView({ reviewId, projectId }: Props) {
 
         // If columns changed since last save, update the review first
         if (columns.length === 0) return;
-
-        if (!isModelAvailable(tabularModel, apiKeys)) {
-            setApiKeyModalProvider(getModelProvider(tabularModel));
-            return;
-        }
 
         setGenerating(true);
 
@@ -283,6 +270,12 @@ export function TRView({ reviewId, projectId }: Props) {
 
         try {
             const response = await streamTabularGeneration(reviewId);
+            if (!response.ok) {
+                if (response.status === 402) {
+                    setIsUpgradeModalOpen(true);
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
             if (!response.body) throw new Error("No body");
 
             const reader = response.body.getReader();
@@ -320,7 +313,13 @@ export function TRView({ reviewId, projectId }: Props) {
                 }
             }
         } catch (err) {
-            console.error("Falha na execução", err);
+            console.error("Generate error", err);
+            // Reset generating cells to empty/error on failure
+            setCells((prev) =>
+                prev.map((c) =>
+                    c.status === "generating" ? { ...c, status: "error" } : c,
+                ),
+            );
         } finally {
             setGenerating(false);
         }
@@ -851,12 +850,6 @@ export function TRView({ reviewId, projectId }: Props) {
                 open={!!ownerOnlyAction}
                 action={ownerOnlyAction ?? undefined}
                 onClose={() => setOwnerOnlyAction(null)}
-            />
-
-            <ApiKeyMissingModal
-                open={apiKeyModalProvider !== null}
-                provider={apiKeyModalProvider}
-                onClose={() => setApiKeyModalProvider(null)}
             />
         </div>
     );

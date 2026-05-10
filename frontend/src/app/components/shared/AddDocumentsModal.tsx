@@ -99,24 +99,19 @@ export function AddDocumentsModal({
             const alreadyHere = selected.filter(
                 (d) => d.project_id === projectId,
             );
-            if (toAssign.length > 0) {
-                setUploading(true);
-                try {
-                    const assigned = await Promise.all(
-                        toAssign.map((d) =>
-                            addDocumentToProject(projectId, d.id),
-                        ),
-                    );
-                    onSelect([...alreadyHere, ...assigned], projectId);
-                } catch (err) {
-                    console.error("Failed to assign documents:", err);
-                } finally {
-                    setUploading(false);
-                }
-            } else {
-                onSelect(alreadyHere, projectId);
-            }
+
+            // Immediate feedback: notify parent and close modal
+            onSelect(selected, projectId);
             onClose();
+
+            // Perform assignments in background if any
+            if (toAssign.length > 0) {
+                Promise.all(
+                    toAssign.map((d) =>
+                        addDocumentToProject(projectId, d.id).catch(() => {}),
+                    ),
+                );
+            }
             return;
         }
 

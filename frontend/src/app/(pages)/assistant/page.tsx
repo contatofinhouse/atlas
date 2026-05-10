@@ -8,7 +8,7 @@ import type { MikeMessage } from "@/app/components/shared/types";
 
 export default function AssistantPage() {
     const router = useRouter();
-    const { messages, isResponseLoading, handleChat, handleNewChat, cancel } =
+    const { messages, isResponseLoading, handleChat, handleNewChat, handleOnboarding, cancel } =
         useAssistantChat();
 
     async function handleInitialSubmit(message: MikeMessage) {
@@ -20,6 +20,7 @@ export default function AssistantPage() {
         return (
             <InitialView
                 onSubmit={(message) => void handleInitialSubmit(message)}
+                onHowToUse={handleOnboarding}
             />
         );
     }
@@ -29,6 +30,7 @@ export default function AssistantPage() {
             messages={messages}
             isResponseLoading={isResponseLoading}
             handleChat={handleChat}
+            onHowToUse={handleOnboarding}
             cancel={cancel}
         />
     );

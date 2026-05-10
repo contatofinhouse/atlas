@@ -13,6 +13,7 @@ import {
 } from "../lib/chatTools";
 import { getUserApiKeys } from "../lib/userSettings";
 import { checkProjectAccess } from "../lib/access";
+import { getUserTierInfo, incrementUsage, FREE_TIER_LIMIT } from "../lib/tierLimit";
 
 const PROJECT_SYSTEM_PROMPT_EXTRA = `PROJECT CONTEXT:
 You are operating within a project folder that contains a collection of legal documents the user has organised for a single matter. The user's questions will usually refer to one or more documents in this project — your job is to find the relevant files to work on. Use list_documents to see what is available and fetch_documents / read_document to pull in any documents you need before answering.
@@ -154,6 +155,14 @@ projectChatRouter.post("/", requireAuth, async (req, res) => {
 
     const apiKeys = await getUserApiKeys(userId, db);
 
+    const tierInfo = await getUserTierInfo(userId);
+    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+        return void res.status(402).json({ 
+            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
+            code: "LIMIT_REACHED"
+        });
+    }
+
     try {
         write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
 
@@ -170,6 +179,9 @@ projectChatRouter.post("/", requireAuth, async (req, res) => {
             apiKeys,
             projectId,
         });
+
+        // Increment usage after successful IA action
+        await incrementUsage(userId);
 
         const annotations = extractAnnotations(fullText, docIndex, events);
         await db.from("chat_messages").insert({

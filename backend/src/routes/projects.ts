@@ -50,32 +50,59 @@ projectsRouter.get("/", requireAuth, async (req, res) => {
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 
-  const result = await Promise.all(
-    projects.map(async (p) => {
-      const [docs, chats, reviews] = await Promise.all([
-        db
-          .from("documents")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", p.id),
-        db
-          .from("chats")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", p.id),
-        db
-          .from("tabular_reviews")
-          .select("id", { count: "exact", head: true })
-          .eq("project_id", p.id),
-      ]);
-      return {
-        ...p,
-        is_owner: p.user_id === userId,
-        document_count: docs.count ?? 0,
-        chat_count: chats.count ?? 0,
-        review_count: reviews.count ?? 0,
-      };
-    }),
-  );
-  console.log(`[GET /projects] Returning ${result.length} projects to client.`);
+  // -------------------------------------------------------------------------
+  // BATCHED DATA: Fetch all documents and folders for all projects in bulk
+  // -------------------------------------------------------------------------
+  const projectIds = projects.map((p) => p.id);
+  const docsByProject: Record<string, any[]> = {};
+  const foldersByProject: Record<string, any[]> = {};
+  const chatCounts: Record<string, number> = {};
+  const reviewCounts: Record<string, number> = {};
+
+  if (projectIds.length > 0) {
+    const [
+      { data: allDocs },
+      { data: allFolders },
+      { data: allChats },
+      { data: allReviews }
+    ] = await Promise.all([
+      db.from("documents").select("*").in("project_id", projectIds),
+      db.from("project_subfolders").select("*").in("project_id", projectIds),
+      db.from("chats").select("project_id").in("project_id", projectIds),
+      db.from("tabular_reviews").select("project_id").in("project_id", projectIds),
+    ]);
+
+    (allDocs ?? []).forEach((d) => {
+      if (d.project_id) {
+        if (!docsByProject[d.project_id]) docsByProject[d.project_id] = [];
+        docsByProject[d.project_id].push(d);
+      }
+    });
+    (allFolders ?? []).forEach((f) => {
+      if (f.project_id) {
+        if (!foldersByProject[f.project_id]) foldersByProject[f.project_id] = [];
+        foldersByProject[f.project_id].push(f);
+      }
+    });
+    (allChats ?? []).forEach((c) => {
+      if (c.project_id) chatCounts[c.project_id] = (chatCounts[c.project_id] ?? 0) + 1;
+    });
+    (allReviews ?? []).forEach((r) => {
+      if (r.project_id) reviewCounts[r.project_id] = (reviewCounts[r.project_id] ?? 0) + 1;
+    });
+  }
+
+  const result = projects.map((p) => ({
+    ...p,
+    is_owner: p.user_id === userId,
+    documents: docsByProject[p.id] ?? [],
+    folders: foldersByProject[p.id] ?? [],
+    document_count: (docsByProject[p.id] ?? []).length,
+    chat_count: chatCounts[p.id] ?? 0,
+    review_count: reviewCounts[p.id] ?? 0,
+  }));
+
+  console.log(`[GET /projects] Returning ${result.length} projects with full tree to client.`);
   res.json(result);
 });
 

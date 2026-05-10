@@ -19,8 +19,6 @@ interface UserProfile {
     creditsRemaining: number;
     tier: string;
     tabularModel: string;
-    claudeApiKey: string | null;
-    geminiApiKey: string | null;
     stripeCustomerId: string | null;
 }
 
@@ -33,12 +31,10 @@ interface UserProfileContextType {
         field: "tabularModel",
         value: string,
     ) => Promise<boolean>;
-    updateApiKey: (
-        provider: "claude" | "gemini",
-        value: string | null,
-    ) => Promise<boolean>;
     reloadProfile: () => Promise<void>;
     incrementMessageCredits: () => Promise<boolean>;
+    isUpgradeModalOpen: boolean;
+    setIsUpgradeModalOpen: (open: boolean) => void;
 }
 
 const UserProfileContext = createContext<UserProfileContextType | undefined>(
@@ -49,6 +45,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
     const { user, isAuthenticated } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
     const loadProfile = useCallback(async (userId: string) => {
         try {
@@ -76,8 +73,6 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                     creditsRemaining: MONTHLY_CREDIT_LIMIT,
                     tier: "Free",
                     tabularModel: "gemini-3-flash-preview",
-                    claudeApiKey: null,
-                    geminiApiKey: null,
                     stripeCustomerId: null,
                 });
                 return;
@@ -111,8 +106,6 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                     tier: data.tier || "Free",
                     tabularModel:
                         data.tabular_model || "gemini-3-flash-preview",
-                    claudeApiKey: data.claude_api_key ?? null,
-                    geminiApiKey: data.gemini_api_key ?? null,
                     stripeCustomerId: data.stripe_customer_id ?? null,
                 });
 
@@ -149,8 +142,6 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                 creditsRemaining: 999999, // temporarily unlimited
                 tier: "Free",
                 tabularModel: "gemini-3-flash-preview",
-                claudeApiKey: null,
-                geminiApiKey: null,
                 stripeCustomerId: null,
             });
         } finally {
@@ -247,36 +238,6 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
         [user],
     );
 
-    const updateApiKey = useCallback(
-        async (
-            provider: "claude" | "gemini",
-            value: string | null,
-        ): Promise<boolean> => {
-            if (!user) return false;
-            const dbField =
-                provider === "claude" ? "claude_api_key" : "gemini_api_key";
-            const stateField =
-                provider === "claude" ? "claudeApiKey" : "geminiApiKey";
-            const normalized = value?.trim() ? value.trim() : null;
-            try {
-                const { error } = await supabase
-                    .from("user_profiles")
-                    .update({
-                        [dbField]: normalized,
-                        updated_at: new Date().toISOString(),
-                    })
-                    .eq("user_id", user.id);
-                if (error) throw error;
-                setProfile((prev) =>
-                    prev ? { ...prev, [stateField]: normalized } : null,
-                );
-                return true;
-            } catch {
-                return false;
-            }
-        },
-        [user],
-    );
 
     const reloadProfile = useCallback(async () => {
         if (user) {
@@ -334,9 +295,10 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                 updateDisplayName,
                 updateOrganisation,
                 updateModelPreference,
-                updateApiKey,
                 reloadProfile,
                 incrementMessageCredits,
+                isUpgradeModalOpen,
+                setIsUpgradeModalOpen,
             }}
         >
             {children}

@@ -17,18 +17,12 @@ import {
     Square,
     X,
 } from "lucide-react";
+import { LukaIcon } from "@/components/chat/luka-icon";
 import { AddDocButton } from "./AddDocButton";
 import { AddDocumentsModal } from "../shared/AddDocumentsModal";
 import { AssistantWorkflowModal } from "./AssistantWorkflowModal";
-import { ApiKeyMissingModal } from "../shared/ApiKeyMissingModal";
 
 import { useSelectedModel } from "@/app/hooks/useSelectedModel";
-import { useUserProfile } from "@/contexts/UserProfileContext";
-import {
-    getModelProvider,
-    isModelAvailable,
-    type ModelProvider,
-} from "@/app/lib/modelAvailability";
 import type { MikeDocument, MikeMessage } from "../shared/types";
 
 export interface ChatInputHandle {
@@ -42,6 +36,7 @@ interface Props {
     hideAddDocButton?: boolean;
     hideWorkflowButton?: boolean;
     onProjectsClick?: () => void;
+    onHowToUse?: () => void;
     projectName?: string;
     projectCmNumber?: string | null;
 }
@@ -54,6 +49,7 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         hideAddDocButton,
         hideWorkflowButton,
         onProjectsClick,
+        onHowToUse,
         projectName,
         projectCmNumber,
     }: Props,
@@ -66,16 +62,9 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
         title: string;
     } | null>(null);
     const [model, setModel] = useSelectedModel();
-    const { profile } = useUserProfile();
-    const apiKeys = {
-        claudeApiKey: profile?.claudeApiKey ?? null,
-        geminiApiKey: profile?.geminiApiKey ?? null,
-    };
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [docSelectorOpen, setDocSelectorOpen] = useState(false);
     const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
-    const [apiKeyModalProvider, setApiKeyModalProvider] =
-        useState<ModelProvider | null>(null);
 
     useImperativeHandle(ref, () => ({
         addDoc: (doc: MikeDocument) => {
@@ -116,10 +105,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
     const handleSubmit = () => {
         const query = value.trim();
         if (!query || isLoading) return;
-        if (!isModelAvailable(model, apiKeys)) {
-            setApiKeyModalProvider(getModelProvider(model));
-            return;
-        }
         setValue("");
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
@@ -271,6 +256,18 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
                                     </span>
                                 </button>
                             )}
+                            {onHowToUse && (
+                                <button
+                                    type="button"
+                                    onClick={onHowToUse}
+                                    className="flex items-center gap-1.5 rounded-lg px-2 h-8 text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                                >
+                                    <LukaIcon size={14} variant="gray" />
+                                    <span className="hidden sm:inline">
+                                        Como usar?
+                                    </span>
+                                </button>
+                            )}
                         </div>
 
                         <div className="flex items-center gap-1">
@@ -311,11 +308,6 @@ export const ChatInput = forwardRef<ChatInputHandle, Props>(function ChatInput(
                 }}
                 projectName={projectName}
                 projectCmNumber={projectCmNumber}
-            />
-            <ApiKeyMissingModal
-                open={apiKeyModalProvider !== null}
-                provider={apiKeyModalProvider}
-                onClose={() => setApiKeyModalProvider(null)}
             />
         </>
     );

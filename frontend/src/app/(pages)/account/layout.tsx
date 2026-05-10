@@ -12,7 +12,7 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-    { id: "general", label: "General", href: "/account" },
+    { id: "general", label: "Geral", href: "/account" },
 ];
 
 export default function AccountLayout({
@@ -46,7 +46,7 @@ export default function AccountLayout({
         <div className="flex flex-col h-full md:overflow-y-auto px-6 py-6 md:py-10">
             <div className="max-w-5xl w-full mx-auto">
                 <h1 className="text-4xl font-medium mb-8 font-eb-garamond">
-                    Settings
+                    Configurações
                 </h1>
 
                 <div className="flex flex-col md:flex-row gap-6 md:gap-10">

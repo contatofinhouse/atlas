@@ -14,6 +14,8 @@ import {
 } from "@/app/lib/mikeApi";
 import { FileDirectory } from "../shared/FileDirectory";
 import { BUILT_IN_WORKFLOWS } from "../workflows/builtinWorkflows";
+import { useWorkflowData } from "@/app/hooks/useWorkflowData";
+import { useDirectoryData, invalidateDirectoryCache } from "../shared/useDirectoryData";
 
 interface Props {
     open: boolean;
@@ -50,13 +52,6 @@ export function AddNewTRModal({
     const [projectDocs, setProjectDocs] = useState<MikeDocument[]>([]);
     const [loadingDocs, setLoadingDocs] = useState(false);
 
-    // Full directory (when underProject is false)
-    const [standaloneDocs, setStandaloneDocs] = useState<MikeDocument[]>([]);
-    const [directoryProjects, setDirectoryProjects] = useState<MikeProject[]>(
-        [],
-    );
-    const [loadingDirectory, setLoadingDirectory] = useState(false);
-
     const [selectedDocIds, setSelectedDocIds] = useState<Set<string>>(
         new Set(),
     );
@@ -64,54 +59,38 @@ export function AddNewTRModal({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Workflow templates
+    const { 
+        loading: loadingWorkflows, 
+        workflows: cachedWorkflows 
+    } = useWorkflowData(open);
     const [workflows, setWorkflows] = useState<MikeWorkflow[]>([]);
-    const [loadingWorkflows, setLoadingWorkflows] = useState(false);
+    
     const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(
         null,
     );
     const [workflowDropdownOpen, setWorkflowDropdownOpen] = useState(false);
 
+    const { 
+        loading: loadingDirectory, 
+        standaloneDocuments: standaloneDocs,
+        projects: directoryProjects,
+        setStandaloneDocuments: setStandaloneDocs
+    } = useDirectoryData(open && !isProjectMode && !underProject);
+
     useEffect(() => {
         if (!open) return;
 
-        setLoadingWorkflows(true);
         const builtinTabular = BUILT_IN_WORKFLOWS.filter(
             (w) => w.type === "tabular",
         );
-        listWorkflows("tabular")
-            .then((custom) => setWorkflows([...builtinTabular, ...custom]))
-            .catch(() => setWorkflows(builtinTabular))
-            .finally(() => setLoadingWorkflows(false));
+        setWorkflows([...builtinTabular, ...cachedWorkflows.filter(w => w.type === "tabular")]);
 
         if (isProjectMode) {
             setSelectedDocIds(
                 new Set((fixedProjectDocs ?? []).map((d) => d.id)),
             );
-            return;
         }
-
-        setLoadingDirectory(true);
-        // /projects only returns counts, not the documents array — fetch
-        // each project in parallel so FileDirectory can render the docs
-        // when the user expands a folder.
-        Promise.all([listStandaloneDocuments(), listProjects()])
-            .then(async ([docs, projs]) => {
-                setStandaloneDocs(
-                    [...docs].sort((a, b) =>
-                        (b.created_at ?? "").localeCompare(a.created_at ?? ""),
-                    ),
-                );
-                const fullProjects = await Promise.all(
-                    projs.map((p) => getProject(p.id)),
-                );
-                setDirectoryProjects(fullProjects);
-            })
-            .catch(() => {
-                setStandaloneDocs([]);
-                setDirectoryProjects([]);
-            })
-            .finally(() => setLoadingDirectory(false));
-    }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [open, cachedWorkflows, isProjectMode, fixedProjectDocs]);
 
     if (!open) return null;
 
@@ -121,8 +100,6 @@ export function AddNewTRModal({
         setSelectedProjectId("");
         setProjectDropdownOpen(false);
         setProjectDocs([]);
-        setStandaloneDocs([]);
-        setDirectoryProjects([]);
         setSelectedDocIds(new Set());
         setSelectedWorkflowId(null);
         setWorkflowDropdownOpen(false);
@@ -176,9 +153,10 @@ export function AddNewTRModal({
                 ),
             );
             if (underProject && selectedProjectId) {
-                setProjectDocs((prev) => [...uploaded, ...prev]);
+                setProjectDocs((prev: MikeDocument[]) => [...uploaded, ...prev]);
             } else {
-                setStandaloneDocs((prev) => [...uploaded, ...prev]);
+                setStandaloneDocs((prev: MikeDocument[]) => [...uploaded, ...prev]);
+                invalidateDirectoryCache();
             }
             uploaded.forEach((d) =>
                 setSelectedDocIds((prev) => new Set([...prev, d.id])),

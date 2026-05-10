@@ -1052,7 +1052,7 @@ interface Props {
 }
 
 export function AssistantMessage({
-    content: _content,
+    content,
     events,
     isStreaming = false,
     isError = false,
@@ -1340,6 +1340,15 @@ export function AssistantMessage({
         <div style={{ minHeight }}>
             <ResponseStatus status={status} />
             <div className="w-full font-inter relative mt-2">
+                {(!events || events.length === 0) && content && (
+                    <div className="prose prose-sm max-w-none font-serif text-gray-800">
+                        <MarkdownContent
+                            text={content}
+                            citationsList={citationsList}
+                            onCitationClick={onCitationClick}
+                        />
+                    </div>
+                )}
                 {events && events.length > 0 ? (
                     <div className="flex flex-col gap-4">
                         {groups.map((g, gIdx) => {

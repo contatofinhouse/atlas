@@ -28,6 +28,7 @@ import { RowActions } from "../shared/RowActions";
 import { MikeIcon } from "@/components/chat/mike-icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useWorkflowData } from "@/app/hooks/useWorkflowData";
 
 type Tab = "all" | "builtin" | "custom" | "hidden";
 
@@ -46,12 +47,16 @@ export function WorkflowList() {
     const { user } = useAuth();
     const { profile } = useUserProfile();
     const isFree = profile?.tier === "Free";
-    const [custom, setCustom] = useState<MikeWorkflow[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { 
+        loading, 
+        workflows: custom, 
+        hiddenIds: hiddenBuiltinIds,
+        setWorkflows: setCustom,
+        setHiddenIds: setHiddenBuiltinIds
+    } = useWorkflowData(true);
     const [selected, setSelected] = useState<MikeWorkflow | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>("all");
     const [newModalOpen, setNewModalOpen] = useState(false);
-    const [hiddenBuiltinIds, setHiddenBuiltinIds] = useState<string[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [actionsOpen, setActionsOpen] = useState(false);
     const [practiceFilter, setPracticeFilter] = useState<string | null>(null);
@@ -64,20 +69,6 @@ export function WorkflowList() {
     const actionsRef = useRef<HTMLDivElement>(null);
     const practiceFilterRef = useRef<HTMLDivElement>(null);
     const typeFilterRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        Promise.all([
-            listWorkflows("assistant"),
-            listWorkflows("tabular"),
-            listHiddenWorkflows(),
-        ])
-            .then(([assistant, tabular, hidden]) => {
-                setCustom([...assistant, ...tabular]);
-                setHiddenBuiltinIds(hidden);
-            })
-            .catch(() => setCustom([]))
-            .finally(() => setLoading(false));
-    }, []);
 
     useEffect(() => {
         setSelectedIds([]);

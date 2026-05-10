@@ -106,23 +106,20 @@ workflowsRouter.get("/", requireAuth, async (req, res) => {
     const { data: wfs } = await sharedQuery;
 
     if (wfs && wfs.length > 0) {
-      // Fetch sharer profiles
+      // Fetch sharer profiles (includes display_name)
       const sharerIds = [...new Set(shares.map((s) => s.shared_by_user_id).filter(Boolean))];
       const { data: profiles } = sharerIds.length > 0
         ? await db.from("user_profiles").select("user_id, display_name").in("user_id", sharerIds)
         : { data: [] };
 
-      // Fetch sharer emails via admin client
-      const admin = getAdminClient();
-      const { data: authData } = await admin.auth.admin.listUsers({ perPage: 1000 });
-      const authUsers = authData?.users ?? [];
-
+      // We skip the expensive admin.auth.admin.listUsers here. 
+      // If display_name is missing, we just show "Shared" or similar, 
+      // as fetching emails for all sharers in bulk is too slow.
       sharedWorkflows = wfs.map((wf) => {
         const share = shares.find((s) => s.workflow_id === wf.id);
         const sharerId = share?.shared_by_user_id;
         const profile = profiles?.find((p) => p.user_id === sharerId);
-        const authUser = authUsers.find((u) => u.id === sharerId);
-        const shared_by_name = profile?.display_name || authUser?.email || null;
+        const shared_by_name = profile?.display_name || "Membro da Equipe";
         return withWorkflowAccess(wf, {
           allowEdit: !!share?.allow_edit,
           isOwner: false,

@@ -11,6 +11,7 @@ import type { MikeProject } from "@/app/components/shared/types";
 import { NewProjectModal } from "./NewProjectModal";
 import { ToolbarTabs } from "@/app/components/shared/ToolbarTabs";
 import { RowActions } from "@/app/components/shared/RowActions";
+import { useDirectoryData } from "@/app/components/shared/useDirectoryData";
 
 function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString(undefined, {
@@ -26,8 +27,11 @@ const CHECK_W = "w-8 shrink-0";
 const NAME_COL_W = "w-[300px] shrink-0";
 
 export function ProjectsOverview() {
-    const [projects, setProjects] = useState<MikeProject[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { 
+        loading, 
+        projects, 
+        setProjects 
+    } = useDirectoryData(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("all");
     const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -41,13 +45,6 @@ export function ProjectsOverview() {
     const actionsRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { user } = useAuth();
-
-    useEffect(() => {
-        listProjects()
-            .then(setProjects)
-            .catch(() => setProjects([]))
-            .finally(() => setLoading(false));
-    }, []);
 
     useEffect(() => {
         setSelectedIds([]);

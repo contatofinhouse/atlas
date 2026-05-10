@@ -495,6 +495,31 @@ export function ProjectPage({ projectId }: Props) {
             .finally(() => setLoading(false));
     }, [projectId]);
 
+    // Polling for documents stuck in 'processing' status
+    useEffect(() => {
+        if (!project?.documents) return;
+        const hasProcessing = project.documents.some(
+            (d) => d.status === "processing" || d.status === "pending"
+        );
+        if (!hasProcessing) return;
+
+        const interval = setInterval(async () => {
+            try {
+                const updated = await getProject(projectId);
+                // Only update if something actually changed to avoid unnecessary re-renders
+                const stillProcessing = updated.documents?.some(
+                    (d) => d.status === "processing" || d.status === "pending"
+                );
+                setProject(updated);
+                if (!stillProcessing) clearInterval(interval);
+            } catch (e) {
+                console.error("[polling] Failed to refresh project status:", e);
+            }
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [project?.documents, projectId]);
+
     // Reset selection and close dropdowns when tab changes
     useEffect(() => {
         setSelectedDocIds([]);

@@ -876,6 +876,8 @@ async function handleDocumentUpload(
       suffix === "pdf"
         ? "application/pdf"
         : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+    // 1. Upload original file (fast)
     await uploadFile(
       key,
       content.buffer.slice(
@@ -885,86 +887,108 @@ async function handleDocumentUpload(
       contentType,
     );
 
-    const rawBuf = content.buffer.slice(
-      content.byteOffset,
-      content.byteOffset + content.byteLength,
-    ) as ArrayBuffer;
-    const tree = await extractStructureTree(rawBuf, suffix, filename);
-    const pageCount = suffix === "pdf" ? await countPdfPages(rawBuf) : null;
-
-    // Convert DOCX/DOC → PDF for display. PDFs are their own rendition.
-    let pdfStoragePath: string | null = null;
-    if (suffix === "docx" || suffix === "doc") {
-      try {
-        const pdfBuf = await docxToPdf(content);
-        const pdfKey = convertedPdfKey(userId, docId);
-        await uploadFile(
-          pdfKey,
-          pdfBuf.buffer.slice(
-            pdfBuf.byteOffset,
-            pdfBuf.byteOffset + pdfBuf.byteLength,
-          ) as ArrayBuffer,
-          "application/pdf",
-        );
-        pdfStoragePath = pdfKey;
-      } catch (err) {
-        console.error(
-          `[upload] DOCX→PDF conversion failed for ${filename}:`,
-          err,
-        );
-      }
-    } else if (suffix === "pdf") {
-      pdfStoragePath = key;
-    }
-
-    // storage_path / pdf_storage_path live on document_versions now —
-    // create the V1 "upload" row and point documents.current_version_id
-    // at it.
+    // 2. Create initial version record (fast)
     const { data: versionRow, error: verErr } = await db
       .from("document_versions")
       .insert({
         document_id: docId,
         storage_path: key,
-        pdf_storage_path: pdfStoragePath,
+        pdf_storage_path: suffix === "pdf" ? key : null,
         source: "upload",
         version_number: 1,
         display_name: filename,
       })
       .select("id")
       .single();
+
     if (verErr || !versionRow) {
-      throw new Error(
-        `Failed to record upload version: ${verErr?.message ?? "unknown"}`,
-      );
+      throw new Error(`Failed to record upload version: ${verErr?.message ?? "unknown"}`);
     }
 
+    // 3. Link document to the new version (fast)
     await db
       .from("documents")
       .update({
         current_version_id: versionRow.id,
         size_bytes: content.byteLength,
-        page_count: pageCount,
-        structure_tree: tree ?? null,
-        status: "ready",
-        updated_at: new Date().toISOString(),
+        status: "processing", // Explicitly keep as processing
       })
       .eq("id", docId);
 
-    const { data: updated } = await db
-      .from("documents")
-      .select("*")
-      .eq("id", docId)
-      .single();
-    // Surface storage paths to the caller for backward compatibility.
-    const responseDoc = updated
-      ? { ...updated, storage_path: key, pdf_storage_path: pdfStoragePath }
-      : updated;
-    return void res.status(201).json(responseDoc);
+    // 4. Respond to client IMMEDIATELY (feel instant)
+    res.status(201).json({ 
+        ...doc, 
+        current_version_id: versionRow.id, 
+        storage_path: key,
+        pdf_storage_path: suffix === "pdf" ? key : null
+    });
+
+    // 5. Run heavy tasks in the background (fire and forget)
+    (async () => {
+      try {
+        console.log(`[upload/background] Starting heavy processing for ${docId}...`);
+        
+        const rawBuf = content.buffer.slice(
+          content.byteOffset,
+          content.byteOffset + content.byteLength,
+        ) as ArrayBuffer;
+
+        // Parallelize background tasks
+        const [tree, pageCount, pdfStoragePath] = await Promise.all([
+          extractStructureTree(rawBuf, suffix, filename),
+          suffix === "pdf" ? countPdfPages(rawBuf) : Promise.resolve(null),
+          (async () => {
+            if (suffix === "docx" || suffix === "doc") {
+               try {
+                 const pdfBuf = await docxToPdf(content);
+                 const pdfKey = convertedPdfKey(userId, docId);
+                 await uploadFile(
+                   pdfKey,
+                   pdfBuf.buffer.slice(pdfBuf.byteOffset, pdfBuf.byteOffset + pdfBuf.byteLength) as ArrayBuffer,
+                   "application/pdf",
+                 );
+                 return pdfKey;
+               } catch (err) {
+                 console.error(`[upload/background] PDF conversion failed:`, err);
+                 return null;
+               }
+            }
+            return suffix === "pdf" ? key : null;
+          })()
+        ]);
+
+        // Update version with PDF path if we generated one
+        if (pdfStoragePath && pdfStoragePath !== key) {
+          await db
+            .from("document_versions")
+            .update({ pdf_storage_path: pdfStoragePath })
+            .eq("id", versionRow.id);
+        }
+
+        // Finalize document record
+        await db
+          .from("documents")
+          .update({
+            page_count: pageCount,
+            structure_tree: tree ?? null,
+            status: "ready",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", docId);
+          
+        console.log(`[upload/background] Finished processing for ${docId}.`);
+      } catch (bgErr) {
+        console.error(`[upload/background] Failed for ${docId}:`, bgErr);
+        await db.from("documents").update({ status: "error" }).eq("id", docId);
+      }
+    })();
+
   } catch (e) {
+    console.error(`[upload] Initial step failed:`, e);
     await db.from("documents").update({ status: "error" }).eq("id", doc.id);
-    return void res
-      .status(500)
-      .json({ detail: `Document processing failed: ${String(e)}` });
+    if (!res.headersSent) {
+      res.status(500).json({ detail: `Document upload failed: ${String(e)}` });
+    }
   }
 }
 

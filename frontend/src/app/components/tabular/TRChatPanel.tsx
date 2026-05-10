@@ -13,6 +13,8 @@ import {
     ChevronDown,
     Trash2,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { MikeIcon } from "@/components/chat/mike-icon";
 import {
     streamTabularChat,
@@ -29,14 +31,8 @@ import type {
     MikeDocument,
 } from "../shared/types";
 
-import { ApiKeyMissingModal } from "../shared/ApiKeyMissingModal";
+
 import { PreResponseWrapper } from "../shared/PreResponseWrapper";
-import { useUserProfile } from "@/contexts/UserProfileContext";
-import {
-    getModelProvider,
-    isModelAvailable,
-    type ModelProvider,
-} from "@/app/lib/modelAvailability";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -446,14 +442,12 @@ function TRChatInput({
     onCancel,
     model,
     onModelChange,
-    apiKeys,
 }: {
     isLoading: boolean;
     onSubmit: (value: string) => void;
     onCancel: () => void;
     model: string;
     onModelChange: (id: string) => void;
-    apiKeys: { claudeApiKey: string | null; geminiApiKey: string | null };
 }) {
     const [value, setValue] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -602,14 +596,9 @@ export function TRChatPanel({
     initialChatId,
     onChatIdChange,
 }: Props) {
-    const { profile, updateModelPreference } = useUserProfile();
-    const apiKeys = {
-        claudeApiKey: profile?.claudeApiKey ?? null,
-        geminiApiKey: profile?.geminiApiKey ?? null,
-    };
+    const { user } = useAuth();
+    const { profile, updateModelPreference, setIsUpgradeModalOpen } = useUserProfile();
     const currentModel = profile?.tabularModel ?? "gemini-3-flash-preview";
-    const [apiKeyModalProvider, setApiKeyModalProvider] =
-        useState<ModelProvider | null>(null);
     const [chats, setChats] = useState<TRChat[]>([]);
     const [currentChatId, setCurrentChatId] = useState<string | null>(
         initialChatId ?? null,
@@ -953,10 +942,6 @@ export function TRChatPanel({
 
     async function handleSubmit(trimmed: string) {
         if (!trimmed || isLoading) return;
-        if (!isModelAvailable(currentModel, apiKeys)) {
-            setApiKeyModalProvider(getModelProvider(currentModel));
-            return;
-        }
 
         // Build messages array for backend (plain text history)
         const history: { role: string; content: string }[] = messages.map(
@@ -1005,6 +990,28 @@ export function TRChatPanel({
                 controller.signal,
                 { reviewTitle, projectName },
             );
+            if (!response.ok) {
+                if (response.status === 402) {
+                    setIsUpgradeModalOpen(true);
+                    setMessages((prev) => {
+                        const next = [...prev];
+                        const last = next[next.length - 1];
+                        if (last && last.role === "assistant") {
+                            next[next.length - 1] = {
+                                ...last,
+                                content:
+                                    "Você atingiu o limite de mensagens do plano gratuito. Faça upgrade para continuar utilizando o LukaLex sem restrições.",
+                                error: "Limite atingido",
+                                isStreaming: false,
+                            };
+                        }
+                        return next;
+                    });
+                    setIsLoading(false);
+                    return;
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
             if (!response.body) throw new Error("No response body");
 
             const reader = response.body.getReader();
@@ -1453,13 +1460,6 @@ export function TRChatPanel({
                 onModelChange={(id) =>
                     updateModelPreference("tabularModel", id)
                 }
-                apiKeys={apiKeys}
-            />
-
-            <ApiKeyMissingModal
-                open={apiKeyModalProvider !== null}
-                provider={apiKeyModalProvider}
-                onClose={() => setApiKeyModalProvider(null)}
             />
         </div>
     );

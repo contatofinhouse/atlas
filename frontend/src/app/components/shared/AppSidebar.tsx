@@ -37,12 +37,11 @@ interface AppSidebarProps {
 
 export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
     const { user } = useAuth();
-    const { profile } = useUserProfile();
+    const { profile, isUpgradeModalOpen, setIsUpgradeModalOpen } = useUserProfile();
     const { chats, currentChatId, setCurrentChatId } = useChatHistoryContext();
     const router = useRouter();
     const pathname = usePathname();
     const [shouldAnimate, setShouldAnimate] = useState(false);
-    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [historyCollapsed, setHistoryCollapsed] = useState(false);
     const [projectNames, setProjectNames] = useState<Record<string, string>>(
@@ -258,6 +257,16 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
             
             {/* Promo / Support Items */}
             <div className="mt-4 px-2.5 space-y-1">
+                <button
+                    onClick={() => window.open("https://wa.me/5511955842951", "_blank")}
+                    className={`w-full h-9 flex items-center gap-3 px-2.5 py-2 rounded-md transition-colors text-left text-gray-700 hover:bg-gray-100 ${!isOpen ? "hidden md:flex justify-center px-0" : "flex"}`}
+                    title={!isOpen ? "Suporte" : ""}
+                >
+                    <MessageCircle className="h-4 w-4 shrink-0 text-black" />
+                    {isOpen && (
+                        <span className="text-sm font-medium">Suporte</span>
+                    )}
+                </button>
                 {profile?.tier === "Free" && (
                     <button
                         onClick={() => setIsUpgradeModalOpen(true)}
@@ -270,16 +279,6 @@ export function AppSidebar({ isOpen, onToggle }: AppSidebarProps) {
                         )}
                     </button>
                 )}
-                <button
-                    onClick={() => window.open("https://wa.me/5511955842951", "_blank")}
-                    className={`w-full h-9 flex items-center gap-3 px-2.5 py-2 rounded-md transition-colors text-left text-gray-700 hover:bg-gray-100 ${!isOpen ? "hidden md:flex justify-center px-0" : "flex"}`}
-                    title={!isOpen ? "Suporte" : ""}
-                >
-                    <MessageCircle className="h-4 w-4 shrink-0 text-black" />
-                    {isOpen && (
-                        <span className="text-sm font-medium">Suporte</span>
-                    )}
-                </button>
             </div>
 
             {/* User Profile */}

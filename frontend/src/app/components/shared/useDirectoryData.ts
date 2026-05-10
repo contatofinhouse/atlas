@@ -19,9 +19,11 @@ export function invalidateDirectoryCache() {
 }
 
 export function useDirectoryData(enabled: boolean) {
-    const [loading, setLoading] = useState(true);
-    const [standaloneDocuments, setStandaloneDocuments] = useState<MikeDocument[]>([]);
-    const [projects, setProjects] = useState<MikeProject[]>([]);
+    const [loading, setLoading] = useState(!cache);
+    const [standaloneDocuments, setStandaloneDocuments] = useState<MikeDocument[]>(
+        cache?.standaloneDocuments ?? [],
+    );
+    const [projects, setProjects] = useState<MikeProject[]>(cache?.projects ?? []);
 
     useEffect(() => {
         if (!enabled) return;
@@ -40,17 +42,13 @@ export function useDirectoryData(enabled: boolean) {
                 const sorted = [...ds].sort((a, b) =>
                     (b.created_at ?? "").localeCompare(a.created_at ?? ""),
                 );
-                return Promise.all(ps.map((p) => getProject(p.id))).then(
-                    (fullProjects) => {
-                        cache = {
-                            standaloneDocuments: sorted,
-                            projects: fullProjects,
-                            fetchedAt: Date.now(),
-                        };
-                        setStandaloneDocuments(sorted);
-                        setProjects(fullProjects);
-                    },
-                );
+                cache = {
+                    standaloneDocuments: sorted,
+                    projects: ps,
+                    fetchedAt: Date.now(),
+                };
+                setStandaloneDocuments(sorted);
+                setProjects(ps);
             })
             .catch(() => {
                 setStandaloneDocuments([]);
@@ -59,5 +57,11 @@ export function useDirectoryData(enabled: boolean) {
             .finally(() => setLoading(false));
     }, [enabled]);
 
-    return { loading, standaloneDocuments, projects };
+    return { 
+        loading, 
+        standaloneDocuments, 
+        projects,
+        setProjects,
+        setStandaloneDocuments
+    };
 }

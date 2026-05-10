@@ -10,12 +10,13 @@ import type { MikeMessage } from "../shared/types";
 
 interface InitialViewProps {
     onSubmit: (message: MikeMessage) => void;
+    onHowToUse: () => void;
 }
 
 const ICON_SIZE = 35;
 const GAP = 16; // gap-4 = 1rem = 16px
 
-export function InitialView({ onSubmit }: InitialViewProps) {
+export function InitialView({ onSubmit, onHowToUse }: InitialViewProps) {
     const { user } = useAuth();
     const { profile } = useUserProfile();
     const [loaded, setLoaded] = useState(false);
@@ -58,10 +59,11 @@ export function InitialView({ onSubmit }: InitialViewProps) {
                         onCancel={() => {}}
                         isLoading={false}
                         onProjectsClick={() => setProjectModalOpen(true)}
+                        onHowToUse={onHowToUse}
                     />
 
                     <div className="text-center">
-                        <p className="text-xs py-3 mb-3 text-gray-500">
+                        <p className="text-[10px] py-3 mb-3 text-gray-400">
                             A IA pode cometer erros. As respostas não são conselhos legais.
                         </p>
                     </div>

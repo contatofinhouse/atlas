@@ -923,6 +923,8 @@ tabularRouter.post("/:reviewId/generate", requireAuth, async (req, res) => {
         );
 
         write("data: [DONE]\n\n");
+        // Increment usage once for the bulk operation
+        await incrementUsage(userId);
     } catch (err) {
         console.error("[tabular/generate] stream error", err);
         try {
@@ -1084,6 +1086,8 @@ function buildTabularMessages(
         .join("\n");
 
     const systemContent = `You are Luca, an AI legal assistant. You are helping with the tabular review titled "${reviewTitle}".
+
+You MUST ALWAYS respond in Brazilian Portuguese (pt-BR). All your prose, explanations, and answers must be in pt-BR.
 
 The review extracts specific fields from multiple legal documents into a structured table.
 You do NOT have the cell content yet — call read_table_cells to fetch the cells you need before answering.

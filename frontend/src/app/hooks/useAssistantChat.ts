@@ -1,15 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { streamChat, streamProjectChat } from "@/app/lib/mikeApi";
 import { useChatHistoryContext } from "@/app/contexts/ChatHistoryContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import { useGenerateChatTitle } from "./useGenerateChatTitle";
 import type {
     AssistantEvent,
     MikeCitationAnnotation,
     MikeMessage,
 } from "@/app/components/shared/types";
+import { ONBOARDING_MESSAGES } from "@/app/lib/onboarding";
 
 interface UseAssistantChatOptions {
     initialMessages?: MikeMessage[];
@@ -35,8 +37,10 @@ export function useAssistantChat({
         loadChats,
         setCurrentChatId,
         saveChat,
+        renameChat,
         setNewChatMessages,
     } = useChatHistoryContext();
+    const { setIsUpgradeModalOpen } = useUserProfile();
     const { generate: generateTitle } = useGenerateChatTitle();
 
     const [messages, setMessages] = useState<MikeMessage[]>(initialMessages);
@@ -45,6 +49,15 @@ export function useAssistantChat({
     const [chatId, setChatId] = useState<string | undefined>(initialChatId);
 
     const abortControllerRef = useRef<AbortController | null>(null);
+    const lastInitialMessagesRef = useRef<MikeMessage[]>(initialMessages);
+
+    // Sync messages if initialMessages changes (e.g. navigation)
+    useEffect(() => {
+        if (initialMessages.length > 0 && initialMessages !== lastInitialMessagesRef.current) {
+            setMessages(initialMessages);
+            lastInitialMessagesRef.current = initialMessages;
+        }
+    }, [initialMessages]);
 
     const dripIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const dripTargetRef = useRef<string>("");
@@ -248,6 +261,31 @@ export function useAssistantChat({
         });
     };
 
+    const handleOnboarding = async () => {
+        const [userMsg, assistantMsg] = ONBOARDING_MESSAGES;
+        
+        setIsResponseLoading(true);
+        try {
+            // 1. Create the chat session FIRST
+            const cid = await handleNewChat(userMsg);
+            
+            if (cid) {
+                // 2. NOW set the full messages (this overwrites the single msg set by handleNewChat)
+                const msgs = [userMsg, assistantMsg];
+                setMessages(msgs);
+                setNewChatMessages(msgs);
+
+                // 3. Rename and Navigate
+                await renameChat(cid, "Como usar o LukaLex");
+                router.push(`/assistant/chat/${cid}`);
+            }
+        } catch (err) {
+            console.error("[handleOnboarding] Error:", err);
+        } finally {
+            setIsResponseLoading(false);
+        }
+    };
+
     const updateMatchingEvent = (
         predicate: (e: AssistantEvent) => boolean,
         updater: (e: AssistantEvent) => AssistantEvent,
@@ -355,6 +393,24 @@ export function useAssistantChat({
                   }));
 
             if (!response.ok) {
+                if (response.status === 402) {
+                    setIsUpgradeModalOpen(true);
+                    setMessages((prev) => {
+                        const updated = [...prev];
+                        const last = updated[updated.length - 1];
+                        if (last?.role === "assistant") {
+                            updated[updated.length - 1] = {
+                                ...last,
+                                content:
+                                    "Você atingiu o limite de mensagens do plano gratuito. Faça upgrade para continuar utilizando o LukaLex sem restrições.",
+                                error: "Limite atingido",
+                            };
+                        }
+                        return updated;
+                    });
+                    setIsResponseLoading(false);
+                    return null;
+                }
                 const errText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errText}`);
             }
@@ -930,6 +986,7 @@ export function useAssistantChat({
         isLoadingCitations,
         handleChat,
         handleNewChat,
+        handleOnboarding,
         setMessages,
         cancel,
         chatId,
