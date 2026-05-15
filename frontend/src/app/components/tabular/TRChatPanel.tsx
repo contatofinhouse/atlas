@@ -44,6 +44,7 @@ interface TRMessage {
     events?: AssistantEvent[];
     annotations?: TRCitationAnnotation[];
     isStreaming?: boolean;
+    error?: string;
 }
 
 interface Props {
