@@ -18,7 +18,7 @@ export function SiteLogo({
 }: SiteLogoProps) {
     const landingHref =
         process.env.NODE_ENV === "production"
-            ? "https://mikeoss.com"
+            ? "https://lucah.com.br"
             : "http://localhost:3000";
     const sizeClasses = {
         sm: "text-xl",
@@ -46,7 +46,7 @@ export function SiteLogo({
                 variant={invert ? "white" : "emerald"} 
             />
             <span className="tracking-tight">
-                Luka<span className="font-medium">Lex</span>
+                <span className="font-serif text-xl text-slate-900 font-medium">Lucah</span>
             </span>
         </h1>
     );

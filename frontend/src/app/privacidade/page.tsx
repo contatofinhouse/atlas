@@ -27,7 +27,7 @@ export default function PrivacidadePage() {
                         <p className="text-sm text-slate-400">Última atualização: 08 de Maio de 2026</p>
 
                         <p>
-                            A sua privacidade é importante para nós. É política da <strong>FINHOUSE (CNPJ: 60.806.192/0001-50)</strong> respeitar a sua privacidade em relação a qualquer informação sua que possamos coletar na plataforma LukaLex.
+                            A sua privacidade é importante para nós. É política da <strong>FINHOUSE (CNPJ: 60.806.192/0001-50)</strong> respeitar a sua privacidade em relação a qualquer informação sua que possamos coletar na plataforma Lucah.
                         </p>
 
                         <section>
@@ -43,11 +43,11 @@ export default function PrivacidadePage() {
                                 2. Sigilo Profissional e Dados Jurídicos
                             </h2>
                             <p>
-                                Entendemos que os documentos enviados ao LukaLex são protegidos por sigilo profissional. Por isso:
+                                Entendemos que os documentos enviados ao Lucah são protegidos por sigilo profissional. Por isso:
                             </p>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
                                 <li><strong>Isolamento de Dados:</strong> Seus documentos e conversas são armazenados de forma isolada e criptografada.</li>
-                                <li><strong>Sem Treinamento Público:</strong> O LukaLex NÃO utiliza seus documentos ou interações para treinar modelos de inteligência artificial de terceiros ou modelos públicos.</li>
+                                <li><strong>Sem Treinamento Público:</strong> O Lucah NÃO utiliza seus documentos ou interações para treinar modelos de inteligência artificial de terceiros ou modelos públicos.</li>
                                 <li><strong>Acesso Restrito:</strong> Nenhum funcionário da Finhouse tem acesso ao conteúdo dos seus arquivos, a menos que solicitado expressamente por você para suporte técnico.</li>
                             </ul>
                         </section>
@@ -62,7 +62,7 @@ export default function PrivacidadePage() {
                         <section>
                             <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider">4. LGPD (Lei Geral de Proteção de Dados)</h2>
                             <p>
-                                Você é livre para recusar a nossa solicitação de informações pessoais, entendendo que talvez não possamos fornecer alguns dos serviços desejados. O LukaLex está em total conformidade com a LGPD, garantindo ao usuário o direito de exclusão total de seus dados a qualquer momento através da plataforma.
+                                Você é livre para recusar a nossa solicitação de informações pessoais, entendendo que talvez não possamos fornecer alguns dos serviços desejados. O Lucah está em total conformidade com a LGPD, garantindo ao usuário o direito de exclusão total de seus dados a qualquer momento através da plataforma.
                             </p>
                         </section>
 

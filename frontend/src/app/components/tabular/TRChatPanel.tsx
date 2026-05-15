@@ -1001,7 +1001,7 @@ export function TRChatPanel({
                             next[next.length - 1] = {
                                 ...last,
                                 content:
-                                    "Você atingiu o limite de mensagens do plano gratuito. Faça upgrade para continuar utilizando o LukaLex sem restrições.",
+                                    "Você atingiu o limite de mensagens do plano gratuito. Faça upgrade para continuar utilizando o Lucah sem restrições.",
                                 error: "Limite atingido",
                                 isStreaming: false,
                             };

@@ -15,9 +15,8 @@ const ebGaramond = EB_Garamond({
 });
 
 export const metadata: Metadata = {
-    title: "LukaLex - Inteligência Jurídica em Escala",
-    description:
-        "Plataforma de IA jurídica para análise de documentos, revisão de contratos e workflows estruturados.",
+    title: "Lucah - Inteligência Jurídica em Escala",
+    description: "Plataforma de inteligência jurídica operada por IA para análise documental e automação de workflows.",
     icons: {
         icon: "/luka-lex-icon.svg?v=4",
         apple: "/luka-lex-icon.svg?v=4",

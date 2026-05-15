@@ -79,7 +79,7 @@ export function UpgradeModal({ isOpen, onClose }: Props) {
                         <Sparkles className="h-4 w-4 text-blue-400" />
                         <span className="text-[10px] font-bold tracking-widest uppercase opacity-70">Plano Premium</span>
                     </div>
-                    <h2 className="text-2xl font-serif text-white leading-none">Mike Pro</h2>
+                    <h2 className="text-2xl font-serif text-white leading-none">Lucah Pro</h2>
                 </div>
 
                 <div className="p-6">
