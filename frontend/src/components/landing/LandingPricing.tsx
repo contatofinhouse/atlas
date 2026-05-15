@@ -108,7 +108,7 @@ export function LandingPricing() {
                             Recomendado
                         </div>
                         <div className="mb-8">
-                            <h3 className="text-lg font-medium text-slate-900 mb-2">Lucah Pro</h3>
+                            <h3 className="text-lg font-medium text-slate-900 mb-2">Doqs Pro</h3>
                             <div className="flex items-baseline gap-1">
                                 <span className="text-4xl font-serif font-bold text-slate-900">R$ {prices[cycle].price}</span>
                                 <span className="text-slate-500">{prices[cycle].total}</span>

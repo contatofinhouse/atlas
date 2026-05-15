@@ -3,11 +3,11 @@ import type { MikeMessage } from "../components/shared/types";
 export const ONBOARDING_MESSAGES: MikeMessage[] = [
     {
         role: "user",
-        content: "Como usar o Lucah?",
+        content: "Como usar o Doqs?",
     },
     {
         role: "assistant",
-        content: `### Bem-vindo ao Lucah! ⚖️
+        content: `### Bem-vindo ao Doqs! ⚖️
 Aqui está como você pode extrair o máximo da nossa inteligência jurídica:
 
 1. **Organize por Projetos** 📁

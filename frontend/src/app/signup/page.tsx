@@ -257,7 +257,7 @@ export default function SignupPage() {
                     <div className="mt-4 text-center text-xs text-gray-500">
                         Ao se cadastrar, você concorda com nossos{" "}
                         <Link
-                            href="https://lucah.com.br/terms"
+                            href="https://doqs.com.br/terms"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-900 hover:underline"
@@ -266,7 +266,7 @@ export default function SignupPage() {
                         </Link>{" "}
                         e{" "}
                         <Link
-                            href="https://lucah.com.br/privacy"
+                            href="https://doqs.com.br/privacy"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-900 hover:underline"

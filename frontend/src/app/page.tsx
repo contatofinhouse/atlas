@@ -51,7 +51,7 @@ export default function LandingPage() {
                                 Inteligência Jurídica <br /> de Elite. <span className="text-slate-400">Escala sem precedentes.</span>
                             </h1>
                             <p className="text-xl md:text-2xl text-slate-500 max-w-xl mb-12 leading-relaxed">
-                                O <span className="font-semibold text-slate-900">Lucah</span> automatiza a análise documental com o rigor e a sofisticação que seu escritório exige.
+                                O <span className="font-semibold text-slate-900">Doqs</span> automatiza a análise documental com o rigor e a sofisticação que seu escritório exige.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center gap-6">
                                 <Link href="/login" className="w-full sm:w-auto">
@@ -76,7 +76,7 @@ export default function LandingPage() {
                             <div className="relative bg-white rounded-2xl shadow-xl border border-gray-200 p-0.5 aspect-[3/2] md:aspect-[16/10] overflow-hidden group transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)]">
                                 <img 
                                     src="/dashboard-preview.png" 
-                                    alt="Lucah Dashboard"
+                                    alt="Doqs Dashboard"
                                     className="w-full h-full object-cover object-center"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
@@ -200,7 +200,7 @@ export default function LandingPage() {
                             ))}
                         </div>
                         <p className="mt-10 text-slate-400 text-sm">
-                            O Lucah adapta seu raciocínio jurídico à doutrina e jurisprudência específica de cada ramo.
+                            O Doqs adapta seu raciocínio jurídico à doutrina e jurisprudência específica de cada ramo.
                         </p>
                     </div>
                 </section>
@@ -261,11 +261,11 @@ export default function LandingPage() {
                     <div className="pt-8 border-t border-gray-100">
                         <div className="bg-slate-50 p-4 rounded-lg mb-8">
                             <p className="text-[11px] text-slate-400 leading-relaxed text-center">
-                                <strong>DISCLAIMER:</strong> O Lucah é uma ferramenta de produtividade jurídica operada por inteligência artificial. Os resultados gerados devem ser validados e revisados por advogados qualificados. O Lucah não fornece aconselhamento jurídico ou consultoria legal e não substitui a atuação profissional do advogado. A Finhouse não se responsabiliza por erros decorrentes da má interpretação ou uso indevido da ferramenta.
+                                <strong>DISCLAIMER:</strong> O Doqs é uma ferramenta de produtividade jurídica operada por inteligência artificial. Os resultados gerados devem ser validados e revisados por advogados qualificados. O Doqs não fornece aconselhamento jurídico ou consultoria legal e não substitui a atuação profissional do advogado. A Finhouse não se responsabiliza por erros decorrentes da má interpretação ou uso indevido da ferramenta.
                             </p>
                         </div>
                         <p className="text-xs text-slate-400 text-center font-medium">
-                            © 2026 Lucah IA • CNPJ: 60.806.192/0001-50 • Todos os direitos reservados.
+                            © 2026 Doqs IA • CNPJ: 60.806.192/0001-50 • Todos os direitos reservados.
                         </p>
                     </div>
                 </div>

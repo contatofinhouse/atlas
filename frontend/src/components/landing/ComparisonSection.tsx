@@ -7,7 +7,7 @@ const COMPARISON_DATA = [
         feature: "Contexto de Projetos (Pastas)",
         luka: true,
         generic: false,
-        description: "O Lucah mantém o contexto de todos os arquivos de um caso simultaneamente.",
+        description: "O Doqs mantém o contexto de todos os arquivos de um caso simultaneamente.",
     },
     {
         feature: "Extração Tabular em Lote",
@@ -41,7 +41,7 @@ export function ComparisonSection() {
             <div className="max-w-5xl mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl font-medium font-serif mb-4 text-slate-900">
-                        Por que advogados preferem o Lucah?
+                        Por que advogados preferem o Doqs?
                     </h2>
                     <p className="text-slate-500 max-w-2xl mx-auto">
                         IAs genéricas são ótimas para conversas rápidas, mas falham na complexidade e no rigor que um escritório de advocacia exige.
@@ -53,7 +53,7 @@ export function ComparisonSection() {
                         <thead>
                             <tr className="border-b border-slate-200">
                                 <th className="py-6 px-4 text-left font-medium text-slate-900 w-1/2">Diferencial</th>
-                                <th className="py-6 px-4 text-center font-medium text-slate-900 bg-slate-50/50">Lucah IA</th>
+                                <th className="py-6 px-4 text-center font-medium text-slate-900 bg-slate-50/50">Doqs IA</th>
                                 <th className="py-6 px-4 text-center font-medium text-slate-500">IAs Genéricas</th>
                             </tr>
                         </thead>

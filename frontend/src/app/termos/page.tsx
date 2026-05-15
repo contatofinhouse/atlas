@@ -26,17 +26,17 @@ export default function TermosPage() {
                         <section>
                             <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider">1. Aceitação dos Termos</h2>
                             <p>
-                                Ao acessar a plataforma Lucah, operada pela <strong>FINHOUSE (CNPJ: 60.806.192/0001-50)</strong>, você concorda em cumprir estes termos de serviço e todas as leis aplicáveis.
+                                Ao acessar a plataforma Doqs, operada pela <strong>FINHOUSE (CNPJ: 60.806.192/0001-50)</strong>, você concorda em cumprir estes termos de serviço e todas as leis aplicáveis.
                             </p>
                         </section>
 
                         <section className="bg-emerald-50 p-6 rounded-xl border border-emerald-100">
                             <h2 className="text-xl font-bold text-emerald-900 uppercase tracking-wider mb-2">2. Natureza do Serviço e Disclaimer</h2>
                             <p className="text-emerald-800">
-                                <strong>IMPORTANTE:</strong> O Lucah é uma ferramenta de produtividade jurídica baseada em inteligência artificial. O sistema auxilia na análise de documentos e extração de dados, porém:
+                                <strong>IMPORTANTE:</strong> O Doqs é uma ferramenta de produtividade jurídica baseada em inteligência artificial. O sistema auxilia na análise de documentos e extração de dados, porém:
                             </p>
                             <ul className="list-disc pl-6 text-emerald-800 space-y-2 mt-4">
-                                <li><strong>Não fornece aconselhamento jurídico:</strong> O Lucah não substitui a consultoria legal profissional.</li>
+                                <li><strong>Não fornece aconselhamento jurídico:</strong> O Doqs não substitui a consultoria legal profissional.</li>
                                 <li><strong>Responsabilidade Técnica:</strong> O usuário (advogado ou profissional qualificado) é o único responsável pela validação final de todos os resultados gerados pela IA.</li>
                                 <li><strong>Possibilidade de Erros:</strong> Como qualquer modelo de linguagem, a IA pode cometer erros ou interpretações equivocadas. O uso da ferramenta pressupõe revisão humana obrigatória.</li>
                             </ul>
@@ -52,14 +52,14 @@ export default function TermosPage() {
                         <section>
                             <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider">4. Isenção de Responsabilidade</h2>
                             <p>
-                                Os materiais na plataforma da Lucah são fornecidos 'como estão'. A Finhouse não oferece garantias, expressas ou implícitas, e, por este meio, isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização ou adequação a um fim específico.
+                                Os materiais na plataforma da Doqs são fornecidos 'como estão'. A Finhouse não oferece garantias, expressas ou implícitas, e, por este meio, isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização ou adequação a um fim específico.
                             </p>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-bold text-slate-900 uppercase tracking-wider">5. Limitações</h2>
                             <p>
-                                Em nenhum caso a Finhouse ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro ou devido a interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais no Lucah.
+                                Em nenhum caso a Finhouse ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro ou devido a interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais no Doqs.
                             </p>
                         </section>
                     </div>
