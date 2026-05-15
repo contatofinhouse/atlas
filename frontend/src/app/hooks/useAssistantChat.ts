@@ -63,7 +63,7 @@ export function useAssistantChat({
     const dripTargetRef = useRef<string>("");
     const dripDisplayLenRef = useRef<number>(0);
     const eventsRef = useRef<AssistantEvent[]>([]);
-    const DRIP_CHARS_PER_TICK = 8;
+    const DRIP_CHARS_PER_TICK = 16;
 
     const stopDrip = () => {
         if (dripIntervalRef.current !== null) {
@@ -186,7 +186,7 @@ export function useAssistantChat({
             setMessages((prev) =>
                 updateLastContentEvent(prev, visibleText, true),
             );
-        }, 16);
+        }, 20);
     };
 
     const cancel = () => {
@@ -863,7 +863,9 @@ export function useAssistantChat({
                 router.replace(`${chatBasePath}/${finalChatId}`);
             }
 
-            await loadChats();
+            // Fire-and-forget: don't block title generation and response
+            // finalization waiting for the full chat list to reload.
+            void loadChats();
 
             const finalChatIdForTitle = streamedChatId || chatId || null;
             if (finalChatIdForTitle && newMessages.length === 1) {

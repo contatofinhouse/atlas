@@ -1345,7 +1345,7 @@ export function ProjectPage({ projectId }: Props) {
                             }`}
                         >
                             {creatingReview ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                            Tabular Review
+                            Análise Tabular
                         </button>
                         {docs.length === 0 && (
                             <div className="pointer-events-none absolute right-0 top-full mt-1.5 z-10 hidden group-hover:flex items-center whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1.5 text-xs text-white shadow-lg">

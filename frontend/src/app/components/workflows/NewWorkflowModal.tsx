@@ -24,7 +24,7 @@ export function NewWorkflowModal({ open, onClose, onCreated, editWorkflow, onUpd
     const customInputRef = useRef<HTMLInputElement>(null);
 
     const isEditing = !!editWorkflow;
-    const isOthers = practice === "Others";
+    const isOthers = practice === "Outros";
     const effectivePractice = isOthers ? (customPractice.trim() || null) : (practice || null);
 
     useEffect(() => {
@@ -34,7 +34,7 @@ export function NewWorkflowModal({ open, onClose, onCreated, editWorkflow, onUpd
             const saved = editWorkflow.practice ?? "";
             const isKnown = (PRACTICE_OPTIONS as readonly string[]).includes(saved);
             if (!isKnown && saved) {
-                setPractice("Others");
+                setPractice("Outros");
                 setCustomPractice(saved);
             } else {
                 setPractice(saved);

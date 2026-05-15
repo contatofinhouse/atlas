@@ -485,27 +485,17 @@ export function resolveDocLabel(
  * Doc references use the *current-turn* `doc_id` slug (looked up by
  * matching the event's stored `document_id` against this turn's freshly
  * built `docIndex`), since slugs are reassigned every turn and the old
- * slug from the prior turn would be meaningless. Falls back to filename
- * only if the doc is no longer in the index (deleted, scope changed).
+/**
+ * Synchronous enrichment using pre-fetched last assistant content.
+ * The caller is responsible for fetching `lastAssistantContent` from the
+ * database (ideally in parallel with other setup work).
  */
-export async function enrichWithPriorEvents(
+export function enrichWithPriorEvents(
     messages: ChatMessage[],
-    chatId: string | null | undefined,
-    db: ReturnType<typeof createServerSupabase>,
     docIndex: DocIndex,
-): Promise<ChatMessage[]> {
-    if (!chatId) return messages;
-    const { data: rows } = await db
-        .from("chat_messages")
-        .select("content, created_at")
-        .eq("chat_id", chatId)
-        .eq("role", "assistant")
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-    const lastRow = rows?.[0] as { content?: unknown } | undefined;
-    const content = lastRow?.content;
-    if (!Array.isArray(content)) return messages;
+    lastAssistantContent: unknown,
+): ChatMessage[] {
+    if (!Array.isArray(lastAssistantContent)) return messages;
 
     const slugByDocumentId = new Map<string, string>();
     for (const [slug, info] of Object.entries(docIndex)) {
@@ -520,7 +510,7 @@ export async function enrichWithPriorEvents(
     };
 
     const lines: string[] = [];
-    for (const ev of content as Record<string, unknown>[]) {
+    for (const ev of lastAssistantContent as Record<string, unknown>[]) {
         if (ev?.type === "doc_created") {
             lines.push(
                 `- generate_docx → ${refFor(ev.document_id, ev.filename)}`,
@@ -578,6 +568,7 @@ export async function enrichWithPriorEvents(
     };
     return enriched;
 }
+
 
 export function buildMessages(
     messages: ChatMessage[],
@@ -2644,12 +2635,16 @@ export async function buildDocContext(
     // assistant's `doc_created` / `doc_edited` events. Without this sweep
     // the model loses access to generated docs after the turn that created
     // them, and can't call edit_document / read_document on them.
+    // NOTE: Limit to the most recent 50 assistant messages to avoid an
+    // unbounded scan that gets slower with conversation length.
     if (chatId) {
         const { data: rows } = await db
             .from("chat_messages")
             .select("content")
             .eq("chat_id", chatId)
-            .eq("role", "assistant");
+            .eq("role", "assistant")
+            .order("created_at", { ascending: false })
+            .limit(50);
         for (const row of rows ?? []) {
             const content = (row as { content?: unknown }).content;
             if (!Array.isArray(content)) continue;
@@ -2805,35 +2800,40 @@ export async function buildWorkflowStore(
         store.set(wf.id, { title: wf.title, prompt_md: wf.prompt_md });
     }
 
-    // Then overlay user-owned assistant workflows.
-    const { data: workflows } = await db
-        .from("workflows")
-        .select("id, title, prompt_md")
-        .eq("user_id", userId)
-        .eq("type", "assistant");
-    for (const wf of workflows ?? []) {
+    // Fetch user-owned AND shared workflows in parallel (was sequential)
+    const sharedIdsPromise = normalizedUserEmail
+        ? db
+              .from("workflow_shares")
+              .select("workflow_id")
+              .eq("shared_with_email", normalizedUserEmail)
+              .then((r) => [...new Set((r.data ?? []).map((s) => s.workflow_id))])
+        : Promise.resolve([] as string[]);
+
+    const [{ data: ownedWorkflows }, sharedIds] = await Promise.all([
+        db
+            .from("workflows")
+            .select("id, title, prompt_md")
+            .eq("user_id", userId)
+            .eq("type", "assistant"),
+        sharedIdsPromise,
+    ]);
+
+    for (const wf of ownedWorkflows ?? []) {
         if (wf.prompt_md) {
             store.set(wf.id, { title: wf.title, prompt_md: wf.prompt_md });
         }
     }
 
-    // Shared assistant workflows must also be readable by workflow tools.
-    if (normalizedUserEmail) {
-        const { data: shares } = await db
-            .from("workflow_shares")
-            .select("workflow_id")
-            .eq("shared_with_email", normalizedUserEmail);
-        const sharedIds = [...new Set((shares ?? []).map((share) => share.workflow_id))];
-        if (sharedIds.length > 0) {
-            const { data: sharedWorkflows } = await db
-                .from("workflows")
-                .select("id, title, prompt_md")
-                .in("id", sharedIds)
-                .eq("type", "assistant");
-            for (const wf of sharedWorkflows ?? []) {
-                if (wf.prompt_md) {
-                    store.set(wf.id, { title: wf.title, prompt_md: wf.prompt_md });
-                }
+    // Fetch shared workflow details (only if there are any)
+    if (sharedIds.length > 0) {
+        const { data: sharedWorkflows } = await db
+            .from("workflows")
+            .select("id, title, prompt_md")
+            .in("id", sharedIds)
+            .eq("type", "assistant");
+        for (const wf of sharedWorkflows ?? []) {
+            if (wf.prompt_md) {
+                store.set(wf.id, { title: wf.title, prompt_md: wf.prompt_md });
             }
         }
     }

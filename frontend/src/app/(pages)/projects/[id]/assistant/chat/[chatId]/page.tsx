@@ -139,7 +139,7 @@ function AssistantGreeting({ username }: { username: string }) {
                             "transform 900ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 800ms ease-in-out 300ms",
                     }}
                 >
-                    Hi, {username}
+                    Olá, {username}
                 </h1>
             </div>
         </div>
@@ -203,7 +203,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
     const { user } = useAuth();
     const { profile } = useUserProfile();
     const username =
-        profile?.displayName?.trim() || user?.email?.split("@")[0] || "there";
+        profile?.displayName?.trim() || user?.email?.split("@")[0] || "visitante";
 
     const [project, setProject] = useState<MikeProject | null>(null);
     const [chatTitle, setChatTitle] = useState<string | null>(null);
@@ -758,7 +758,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                         onClick={() => router.push("/projects")}
                         className="text-gray-500 hover:text-gray-700 transition-colors"
                     >
-                        Projects
+                        Projetos
                     </button>
                     <span className="text-gray-300">›</span>
                     {project ? (
@@ -785,12 +785,12 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                         }
                         className="text-gray-500 hover:text-gray-700 transition-colors"
                     >
-                        Assistant
+                        Assistente
                     </button>
                     <span className="text-gray-300">›</span>
                     {chatLoaded ? (
                         <span className="text-gray-900 truncate max-w-xs">
-                            {chatTitle ?? "Untitled New Chat"}
+                            {chatTitle ?? "Novo Chat sem título"}
                         </span>
                     ) : (
                         <div className="h-6 w-40 rounded bg-gray-100 animate-pulse" />
@@ -800,7 +800,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                     <button
                         onClick={handleNewChat}
                         disabled={creatingChat}
-                        title="New chat"
+                        title="Novo chat"
                         className="flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-40"
                     >
                         {creatingChat ? (
@@ -812,7 +812,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                     <button
                         onClick={handleDeleteChat}
                         disabled={deletingChat}
-                        title="Delete chat"
+                        title="Excluir chat"
                         className="flex items-center justify-center p-1.5 text-gray-500 hover:text-red-600 transition-colors disabled:opacity-40"
                     >
                         {deletingChat ? (
@@ -857,7 +857,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                             {/* Explorer header */}
                             <div className="h-10 flex items-center justify-between px-3 border-b border-gray-200 shrink-0">
                                 <span className="text-xs text-gray-700">
-                                    Explorer
+                                    Explorador
                                 </span>
                                 <div className="flex items-center gap-1">
                                     <input
@@ -879,7 +879,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                                             fileInputRef.current?.click()
                                         }
                                         disabled={uploading}
-                                        title="Upload documents"
+                                        title="Carregar documentos"
                                         className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-40"
                                     >
                                         {uploading ? (
@@ -892,7 +892,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                                         onClick={() =>
                                             setExplorerCollapsed(true)
                                         }
-                                        title="Collapse explorer"
+                                        title="Recolher explorador"
                                         className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                                     >
                                         <ChevronLeft className="h-3.5 w-3.5" />
@@ -927,7 +927,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                                 {explorerDragOver && (
                                     <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
                                         <p className="text-xs text-blue-500 font-medium">
-                                            Drop to upload
+                                            Solte para carregar
                                         </p>
                                     </div>
                                 )}
@@ -956,7 +956,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                         <div className="h-10 flex items-center justify-center border-b border-gray-200 shrink-0 px-1">
                             <button
                                 onClick={() => setExplorerCollapsed(false)}
-                                title="Expand explorer"
+                                title="Expandir explorador"
                                 className="p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                             >
                                 <ChevronRight className="h-3.5 w-3.5" />
@@ -974,7 +974,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                     >
                         {tabs.length === 0 ? (
                             <span className="px-4 self-center text-xs text-gray-700">
-                                Document Viewer
+                                Visualizador de Documentos
                             </span>
                         ) : (
                             tabs.map((tab) => {
@@ -1100,12 +1100,10 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                             <div className="flex items-center justify-center h-full px-8 bg-gray-100">
                                 <div className="text-center space-y-3">
                                     <p className="font-serif text-gray-700 text-xl">
-                                        Click on a document to display here.
+                                        Clique em um documento para visualizá-lo aqui.
                                     </p>
                                     <p className="font-serif text-base text-gray-500">
-                                        Pro tip: Drag a document from the
-                                        Project Explorer to the Assistant to
-                                        direct it to read or edit.
+                                        Dica: Arraste um documento do Explorador de Projetos para o Assistente para que ele o leia ou edite.
                                     </p>
                                 </div>
                             </div>
@@ -1125,7 +1123,7 @@ export default function ProjectAssistantChatPage({ params }: Props) {
                     <div className="h-10 flex items-center gap-2 px-4 border-b border-gray-200 shrink-0">
                         <MikeIcon size={16} />
                         <span className="text-xs text-gray-700">
-                            Project Assistant
+                            Assistente de Projeto
                         </span>
                     </div>
 

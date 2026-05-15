@@ -204,7 +204,7 @@ function CitationHeader({
     return (
         <div className="pt-2 pb-3">
             <div className="flex items-center gap-2 mb-2">
-                <SectionLabel>Citation</SectionLabel>
+                <SectionLabel>Citação</SectionLabel>
                 <div className="ml-auto shrink-0">
                     <DownloadButton
                         documentId={documentId}
@@ -245,7 +245,7 @@ function TrackedChangeHeader({
     return (
         <div className="pt-2 pb-3">
             <div className="flex items-center gap-2 mb-2">
-                <SectionLabel>Tracked Change</SectionLabel>
+                <SectionLabel>Alteração Rastreada</SectionLabel>
                 <div className="ml-auto flex items-center gap-2 shrink-0">
                     <EditResolveButtons
                         edit={edit}
@@ -405,8 +405,8 @@ function EditResolveButtons({
                     versionId: edit.version_id ?? null,
                     message:
                         verb === "accept"
-                            ? "Couldn't save accept — please retry."
-                            : "Couldn't save reject — please retry.",
+                            ? "Não foi possível salvar a aceitação — tente novamente."
+                            : "Não foi possível salvar a rejeição — tente novamente.",
                 });
             } finally {
                 setBusy(false);
@@ -423,14 +423,14 @@ function EditResolveButtons({
                 disabled={inFlight || resolved}
                 className="inline-flex items-center gap-1 rounded-lg border border-gray-900 bg-gray-900 px-2 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {status === "accepted" ? "Accepted" : "Accept"}
+                {status === "accepted" ? "Aceito" : "Aceitar"}
             </button>
             <button
                 onClick={() => handle("reject")}
                 disabled={inFlight || resolved}
                 className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {status === "rejected" ? "Rejected" : "Reject"}
+                {status === "rejected" ? "Rejeitado" : "Rejeitar"}
             </button>
         </div>
     );
@@ -499,7 +499,7 @@ function DownloadButton({
             ) : (
                 <Download className="h-3.5 w-3.5" />
             )}
-            Download
+            Baixar
         </button>
     );
 }

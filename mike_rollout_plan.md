@@ -26,7 +26,7 @@ Este documento reflete o progresso real e as etapas críticas restantes para o l
 - [x] **Refinamento de Conversão:** Reordenação estratégica do Sidebar (Suporte e Seja Pro).
 - [x] **Fechamento de Brechas:** Créditos agora são contados corretamente em chats de projeto e gerações em lote.
 - [x] **Estabilidade UI:** Correção de loops de renderização e erros de tipagem.
-- [ ] **QA de Traduções:** Revisão final de todos os textos em pt-BR (Modais e Workflows).
+- [x] **QA de Traduções:** Revisão final de todos os textos em pt-BR (DocPanel, Modais e Workflows traduzidos).
 - [ ] **Stress Test de Limites:** Validar se o bloqueio de 20 ações/mês funciona em todos os cenários (Chat, Projetos, Tabular).
 
 ---
@@ -37,27 +37,41 @@ Este documento reflete o progresso real e as etapas críticas restantes para o l
 **Objetivo:** Tirar o app do `localhost` e colocar no domínio oficial.
 
 1.  **Dockerização:**
-    - [ ] Criar `Dockerfile` otimizado para o Backend (Node/Express).
-    - [ ] Criar `Dockerfile` para o Frontend (Next.js Standalone mode).
-    - [ ] Configurar `docker-compose.yml` para orquestrar os serviços.
+    - [x] Criar `Dockerfile` otimizado para o Backend (Node/Express).
+    - [x] Criar `Dockerfile` para o Frontend (Next.js Standalone mode).
+    - [x] Configurar `docker-compose.yml` para orquestrar os serviços.
 
 2.  **Oracle Cloud Setup:**
-    - [ ] Provisionar instância ARM Ampere (Always Free tier).
-    - [ ] Configurar regras de rede (Ingress/Egress) e Firewall.
-    - [ ] Instalar Docker e Nginx (Reverse Proxy com SSL/Certbot).
+    - [x] Provisionar instância ARM Ampere (Always Free tier).
+    - [x] Proteger chaves SSH localmente (.gitignore configurado).
+    - [ ] Configurar regras de rede (Ingress/Egress) e Firewall na Oracle.
+    - [ ] Instalar Docker e Nginx (Reverse Proxy com SSL/Certbot) no servidor.
 
 3.  **Configuração de Produção:**
     - [ ] Migrar variáveis de ambiente (.env) para segredos de produção.
     - [ ] Apontar DNS do domínio definitivo para o IP da instância.
     - [ ] Teste de estresse final em ambiente de staging.
 
-### 🟡 Fase 6: Melhorias de "QoL" (Opcional para V1)
-- [ ] **Real-time Sync:** Trocar o `setInterval` do status dos documentos por Supabase Realtime.
-- [ ] **Mobile Touch-up:** Verificação final de responsividade em telas ultra-pequenas.
+### 🟡 Fase 6: Evolução para "Legal OS" (Roadmap V2)
+**Objetivo:** Transformar a ferramenta de uma "IA Jurídica" para o Sistema Operacional central do escritório.
+
+1.  **Gestão de Prazos e Tarefas (Case Management):**
+    - [ ] Módulo de calendário integrado aos projetos.
+    - [ ] Extração automática de prazos de documentos jurídicos via IA.
+2.  **CRM e Base de Contatos:**
+    - [ ] Diretório de clientes (CNPJ, endereço, representantes).
+    - [ ] Injeção automática de dados do cliente na geração de minutas (generate_docx).
+3.  **Busca Semântica Global (Enterprise Search):**
+    - [ ] Barra de busca unificada ("Omnibar") para pesquisar cláusulas e termos em todos os projetos e documentos do escritório simultaneamente.
+4.  **Assinaturas Eletrônicas:**
+    - [ ] Integração com ZapSign/Clicksign para enviar documentos gerados diretamente para assinatura.
+5.  **Auditoria e RBAC (Controle de Acesso):**
+    - [ ] Níveis de permissão granulares (Admin, Advogado, Estagiário).
+    - [ ] Logs de auditoria (quem acessou/baixou qual documento).
 
 ---
 
 ## 4. Próximos Passos Imediatos
 1. Testar exaustivamente o bloqueio de Tier Limit em conta Free.
-2. Revisar traduções de novos modais e botões.
-3. Gerar os arquivos Docker para teste local.
+2. Gerar os arquivos Docker para teste local.
+3. Iniciar provisionamento na Oracle Cloud.

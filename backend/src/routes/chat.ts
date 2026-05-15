@@ -324,14 +324,6 @@ chatRouter.post("/", requireAuth, async (req, res) => {
         model?: string; // We'll ignore this in favor of smart routing
     };
 
-    const tierInfo = await getUserTierInfo(userId);
-    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
-        return void res.status(402).json({ 
-            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
-            code: "LIMIT_REACHED"
-        });
-    }
-
     console.log("[chat/stream] incoming request", {
         userId,
         chat_id,
@@ -342,60 +334,81 @@ chatRouter.post("/", requireAuth, async (req, res) => {
 
     const userEmail = res.locals.userEmail as string | undefined;
     const db = createServerSupabase();
-    let chatId = chat_id ?? null;
-    let chatTitle: string | null = null;
 
-    if (chatId) {
-        // Either chat owner OR a member of the chat's project can post.
-        const { data: existing } = await db
-            .from("chats")
-            .select("id, title, user_id, project_id")
-            .eq("id", chatId)
-            .single();
-        let canUse = !!existing && existing.user_id === userId;
-        if (!canUse && existing?.project_id) {
-            const access = await checkProjectAccess(
-                existing.project_id,
-                userId,
-                userEmail,
-                db,
-            );
-            canUse = access.ok;
+    // -------------------------------------------------------------------------
+    // PARALLEL: Tier check + chat resolution run concurrently
+    // -------------------------------------------------------------------------
+    const resolveChatId = async (): Promise<{ chatId: string; chatTitle: string | null }> => {
+        let chatId = chat_id ?? null;
+        let chatTitle: string | null = null;
+
+        if (chatId) {
+            const { data: existing } = await db
+                .from("chats")
+                .select("id, title, user_id, project_id")
+                .eq("id", chatId)
+                .single();
+            let canUse = !!existing && existing.user_id === userId;
+            if (!canUse && existing?.project_id) {
+                const access = await checkProjectAccess(
+                    existing.project_id,
+                    userId,
+                    userEmail,
+                    db,
+                );
+                canUse = access.ok;
+            }
+            if (!canUse || !existing) chatId = null;
+            else chatTitle = existing.title;
         }
-        if (!canUse || !existing) chatId = null;
-        else chatTitle = existing.title;
+
+        if (!chatId) {
+            if (project_id) {
+                const access = await checkProjectAccess(
+                    project_id,
+                    userId,
+                    userEmail,
+                    db,
+                );
+                if (!access.ok) throw new Error("PROJECT_NOT_FOUND");
+            }
+            const { data: newChat, error } = await db
+                .from("chats")
+                .insert({ user_id: userId, project_id: project_id ?? null })
+                .select("id, title")
+                .single();
+            if (error || !newChat) throw new Error("CHAT_CREATE_FAILED");
+            chatId = newChat.id as string;
+            chatTitle = newChat.title;
+        }
+
+        return { chatId, chatTitle };
+    };
+
+    let tierInfo, chatResolution;
+    try {
+        [tierInfo, chatResolution] = await Promise.all([
+            getUserTierInfo(userId),
+            resolveChatId(),
+        ]);
+    } catch (err: any) {
+        if (err?.message === "PROJECT_NOT_FOUND")
+            return void res.status(404).json({ detail: "Project not found" });
+        if (err?.message === "CHAT_CREATE_FAILED") {
+            console.error("[chat/stream] failed to create chat", err);
+            return void res.status(500).json({ detail: "Failed to create chat" });
+        }
+        throw err;
     }
 
-    if (!chatId) {
-        // If creating a chat tied to a project, the user must have access
-        // to the project (own or shared).
-        if (project_id) {
-            const access = await checkProjectAccess(
-                project_id,
-                userId,
-                userEmail,
-                db,
-            );
-            if (!access.ok)
-                return void res
-                    .status(404)
-                    .json({ detail: "Project not found" });
-        }
-        const { data: newChat, error } = await db
-            .from("chats")
-            .insert({ user_id: userId, project_id: project_id ?? null })
-            .select("id, title")
-            .single();
-        if (error || !newChat) {
-            console.error("[chat/stream] failed to create chat", error);
-            return void res
-                .status(500)
-                .json({ detail: "Failed to create chat" });
-        }
-        chatId = newChat.id as string;
-        chatTitle = newChat.title;
+    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+        return void res.status(402).json({ 
+            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
+            code: "LIMIT_REACHED"
+        });
     }
 
+    const { chatId, chatTitle } = chatResolution;
     console.log("[chat/stream] resolved chatId", chatId);
 
     // -------------------------------------------------------------------------
@@ -411,11 +424,12 @@ chatRouter.post("/", requireAuth, async (req, res) => {
     write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
 
     // -------------------------------------------------------------------------
-    // PARALLEL SETUP: Load documents, workflows, and save user message in parallel
+    // PARALLEL SETUP: Load documents, workflows, enrichment, and save user
+    // message all in parallel
     // -------------------------------------------------------------------------
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
 
-    const [contextData, workflowStore] = await Promise.all([
+    const [contextData, workflowStore, , lastAssistantEvents] = await Promise.all([
         buildDocContext(messages, userId, db, chatId),
         buildWorkflowStore(userId, userEmail, db),
         lastUser
@@ -427,6 +441,18 @@ chatRouter.post("/", requireAuth, async (req, res) => {
                   workflow: lastUser.workflow ?? null,
               })
             : Promise.resolve(null),
+        // Pre-fetch the last assistant events for enrichment (runs in parallel
+        // with buildDocContext instead of sequentially after it)
+        chatId
+            ? db
+                  .from("chat_messages")
+                  .select("content")
+                  .eq("chat_id", chatId)
+                  .eq("role", "assistant")
+                  .order("created_at", { ascending: false })
+                  .limit(1)
+                  .then((r) => r.data?.[0]?.content ?? null)
+            : Promise.resolve(null),
     ]);
 
     const { docIndex, docStore } = contextData;
@@ -436,12 +462,11 @@ chatRouter.post("/", requireAuth, async (req, res) => {
         filename: info.filename,
     }));
 
-    // enrichment needs docIndex, so it follows the context build
-    const enrichedMessages = await enrichWithPriorEvents(
+    // Enrichment uses docIndex + pre-fetched last assistant events
+    const enrichedMessages = enrichWithPriorEvents(
         messages,
-        chatId,
-        db,
         docIndex,
+        lastAssistantEvents,
     );
     const apiMessages = buildMessages(enrichedMessages, docAvailability);
 
@@ -475,8 +500,8 @@ chatRouter.post("/", requireAuth, async (req, res) => {
             projectId: project_id ?? null,
         });
 
-        // Increment usage after successful IA action
-        await incrementUsage(userId);
+        // Increment usage fire-and-forget (no need to block the response)
+        void incrementUsage(userId);
 
         console.log("[chat/stream] LLM stream finished", {
             fullTextLen: fullText?.length ?? 0,

@@ -44,20 +44,24 @@ export async function getUserTierInfo(userId: string): Promise<TierInfo> {
 
 export async function incrementUsage(userId: string) {
     const db = createServerSupabase();
-    // We use a raw increment to avoid race conditions if possible, 
-    // but with Supabase/PostgREST we'll just do a standard update for now 
-    // or use a RPC if we want perfect accuracy.
-    const { data } = await db
-        .from("user_profiles")
-        .select("message_credits_used")
-        .eq("user_id", userId)
-        .single();
-    
-    await db
-        .from("user_profiles")
-        .update({ message_credits_used: (data?.message_credits_used || 0) + 1 })
-        .eq("user_id", userId);
+    // Single atomic update — avoids the race condition of read-then-write
+    // and eliminates one DB round-trip vs. the old SELECT + UPDATE approach.
+    const { error } = await db.rpc("increment_message_credits", { p_user_id: userId });
+    if (error) {
+        // Fallback: if the RPC doesn't exist yet, use a standard update.
+        // This is slightly racy but functional until the RPC is deployed.
+        const { data } = await db
+            .from("user_profiles")
+            .select("message_credits_used")
+            .eq("user_id", userId)
+            .single();
+        await db
+            .from("user_profiles")
+            .update({ message_credits_used: (data?.message_credits_used || 0) + 1 })
+            .eq("user_id", userId);
+    }
 }
+
 
 export const FREE_TIER_LIMIT = 20;
 

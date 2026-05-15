@@ -41,15 +41,21 @@ projectChatRouter.post("/", requireAuth, async (req, res) => {
 
     const db = createServerSupabase();
 
-    // Verify the user has access to the project (owner or shared member).
-    const projectAccess = await checkProjectAccess(
-        projectId,
-        userId,
-        userEmail,
-        db,
-    );
+    // -------------------------------------------------------------------------
+    // PARALLEL: Tier check + project access check run concurrently
+    // -------------------------------------------------------------------------
+    const [tierInfo, projectAccess] = await Promise.all([
+        getUserTierInfo(userId),
+        checkProjectAccess(projectId, userId, userEmail, db),
+    ]);
     if (!projectAccess.ok)
         return void res.status(404).json({ detail: "Project not found" });
+    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
+        return void res.status(402).json({ 
+            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
+            code: "LIMIT_REACHED"
+        });
+    }
 
     let chatId = chat_id ?? null;
     let chatTitle: string | null = null;
@@ -79,33 +85,61 @@ projectChatRouter.post("/", requireAuth, async (req, res) => {
         chatTitle = newChat.title;
     }
 
-    const lastUser = [...messages].reverse().find((m) => m.role === "user");
-    if (lastUser) {
-        await db.from("chat_messages").insert({
-            chat_id: chatId,
-            role: "user",
-            content: lastUser.content,
-            files: lastUser.files ?? null,
-            workflow: lastUser.workflow ?? null,
-        });
-    }
+    // -------------------------------------------------------------------------
+    // STREAM EARLY: Send headers and chat_id before heavy setup
+    // -------------------------------------------------------------------------
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
 
-    const { docIndex, docStore, folderPaths } = await buildProjectDocContext(
-        projectId,
-        userId,
-        db,
-    );
+    const write = (line: string) => res.write(line);
+    write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
+
+    // -------------------------------------------------------------------------
+    // PARALLEL SETUP: Load documents, workflows, enrichment, API keys, and
+    // save user message all in parallel
+    // -------------------------------------------------------------------------
+    const lastUser = [...messages].reverse().find((m) => m.role === "user");
+
+    const [{ docIndex, docStore, folderPaths }, workflowStore, , apiKeys, lastAssistantEvents] = await Promise.all([
+        buildProjectDocContext(projectId, userId, db),
+        buildWorkflowStore(userId, userEmail, db),
+        lastUser
+            ? db.from("chat_messages").insert({
+                  chat_id: chatId,
+                  role: "user",
+                  content: lastUser.content,
+                  files: lastUser.files ?? null,
+                  workflow: lastUser.workflow ?? null,
+              })
+            : Promise.resolve(null),
+        getUserApiKeys(userId, db),
+        // Pre-fetch the last assistant events for enrichment (in parallel)
+        chatId
+            ? db
+                  .from("chat_messages")
+                  .select("content")
+                  .eq("chat_id", chatId)
+                  .eq("role", "assistant")
+                  .order("created_at", { ascending: false })
+                  .limit(1)
+                  .then((r) => r.data?.[0]?.content ?? null)
+            : Promise.resolve(null),
+    ]);
+
     const docAvailability = Object.entries(docIndex).map(([doc_id, info]) => ({
         doc_id,
         filename: info.filename,
         folder_path: folderPaths.get(doc_id),
     }));
 
-    const enrichedMessages = await enrichWithPriorEvents(
+    // Enrichment uses docIndex + pre-fetched last assistant events
+    const enrichedMessages = enrichWithPriorEvents(
         messages,
-        chatId,
-        db,
         docIndex,
+        lastAssistantEvents,
     );
     const messagesForLLM: ChatMessage[] = displayed_doc
         ? enrichedMessages.map((m, i) => {
@@ -143,29 +177,7 @@ projectChatRouter.post("/", requireAuth, async (req, res) => {
         systemPromptExtra,
     );
 
-    const workflowStore = await buildWorkflowStore(userId, userEmail, db);
-
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-    res.setHeader("X-Accel-Buffering", "no");
-    res.flushHeaders();
-
-    const write = (line: string) => res.write(line);
-
-    const apiKeys = await getUserApiKeys(userId, db);
-
-    const tierInfo = await getUserTierInfo(userId);
-    if (tierInfo.tier === "Free" && tierInfo.creditsUsed >= FREE_TIER_LIMIT) {
-        return void res.status(402).json({ 
-            detail: "Limite de uso gratuito atingido (20 ações/mês). Faça upgrade para o Pro para continuar.",
-            code: "LIMIT_REACHED"
-        });
-    }
-
     try {
-        write(`data: ${JSON.stringify({ type: "chat_id", chatId })}\n\n`);
-
         const { fullText, events } = await runLLMStream({
             apiMessages,
             docStore,
@@ -180,8 +192,8 @@ projectChatRouter.post("/", requireAuth, async (req, res) => {
             projectId,
         });
 
-        // Increment usage after successful IA action
-        await incrementUsage(userId);
+        // Increment usage fire-and-forget (no need to block the response)
+        void incrementUsage(userId);
 
         const annotations = extractAnnotations(fullText, docIndex, events);
         await db.from("chat_messages").insert({

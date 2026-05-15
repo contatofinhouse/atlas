@@ -7,6 +7,7 @@ build
 
 .env
 .env.*
+.env.local
 !.env.example
 !.env.local.example
 
@@ -16,3 +17,7 @@ next-env.d.ts
 .DS_Store
 .vercel
 coverage
+*.key
+*.pub
+*.tar
+*.zip

@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "^1.32.0"
   }
 }
