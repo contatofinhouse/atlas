@@ -19,7 +19,15 @@ export function UpgradeModal({ isOpen, onClose }: Props) {
 
     if (!isOpen) return null;
 
-    const prices = {
+    interface PriceInfo {
+        id?: string;
+        label: string;
+        price: string;
+        total: string;
+        discount?: string;
+    }
+
+    const prices: Record<string, PriceInfo> = {
         monthly: { id: process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY, label: "Mensal", price: "R$ 197", total: "/mês" },
         quarterly: { id: process.env.NEXT_PUBLIC_STRIPE_PRICE_QUARTERLY, label: "Trimestral", price: "R$ 177", total: "/mês", discount: "10% OFF" },
         semiannual: { id: process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMIANNUAL, label: "Semestral", price: "R$ 157", total: "/mês", discount: "20% OFF" },
