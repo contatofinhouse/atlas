@@ -85,7 +85,7 @@ export function UpgradeModal({ isOpen, onClose }: Props) {
                 <div className="p-6">
                     {/* Billing Cycle Toggle */}
                     <div className="flex p-1 bg-gray-50 rounded-xl mb-6">
-                        {(Object.keys(prices) as Array<keyof typeof prices>).map((k) => (
+                        {(["monthly", "quarterly", "semiannual"] as const).map((k) => (
                             <button
                                 key={k}
                                 onClick={() => setCycle(k)}
