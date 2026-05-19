@@ -28,10 +28,10 @@ function SignupForm() {
     const [isRedirectingCheckout, setIsRedirectingCheckout] = useState(false);
 
     useEffect(() => {
-        if (!authLoading && isAuthenticated && !success) {
+        if (!authLoading && isAuthenticated && !success && !isRedirectingCheckout) {
             router.replace("/assistant");
         }
-    }, [authLoading, isAuthenticated, router, success]);
+    }, [authLoading, isAuthenticated, router, success, isRedirectingCheckout]);
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -150,8 +150,13 @@ function SignupForm() {
         <div className="flex-1 flex flex-col justify-center items-center p-8 md:p-12 relative overflow-y-auto">
             <div className="w-full max-w-[400px] my-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-2xl font-medium font-serif text-slate-900">
+                    <h2 className="text-2xl font-medium font-serif text-slate-900 flex items-center gap-2">
                         {plan === "pro" ? "Criar conta Pro" : "Criar conta"}
+                        {plan !== "pro" && (
+                            <span className="text-[10px] font-bold tracking-widest uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full mt-1">
+                                Grátis
+                            </span>
+                        )}
                     </h2>
                     <div className="flex text-sm font-medium">
                         <Link
@@ -253,8 +258,14 @@ function SignupForm() {
                         disabled={loading}
                         className="w-full h-12 mt-6 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-md transition-all"
                     >
-                        {loading ? "Processando..." : (plan === "pro" ? "Continuar para Pagamento" : "Criar Conta e Acessar")}
+                        {loading ? "Processando..." : (plan === "pro" ? "Continuar para Pagamento" : "Criar Conta Gratuitamente")}
                     </Button>
+                    
+                    {plan !== "pro" && (
+                        <p className="text-center text-xs text-slate-400 mt-2 font-medium">
+                            Nenhum cartão de crédito é exigido.
+                        </p>
+                    )}
                     
                     <p className="mt-8 text-center text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
                         Ao se cadastrar, você concorda com nossos{" "}
