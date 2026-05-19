@@ -95,7 +95,7 @@ export function LandingPricing() {
                                 Funções Avançadas Bloqueadas
                             </li>
                         </ul>
-                        <Link href="/login">
+                        <Link href="/signup">
                             <Button variant="outline" className="w-full border-slate-200 text-slate-900 hover:bg-slate-50">
                                 Começar Agora
                             </Button>
@@ -123,7 +123,7 @@ export function LandingPricing() {
                                 </li>
                             ))}
                         </ul>
-                        <Link href="/login">
+                        <Link href={`/signup?plan=pro&cycle=${cycle}`}>
                             <Button className="w-full bg-slate-900 text-white hover:bg-slate-800 shadow-lg">
                                 Assinar Plano Pro
                             </Button>

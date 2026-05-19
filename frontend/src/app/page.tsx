@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { SiteLogo } from "@/components/site-logo";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
@@ -29,7 +30,7 @@ export default function LandingPage() {
                         <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
                             Entrar
                         </Link>
-                        <Link href="/login">
+                        <Link href="/signup">
                             <Button className="bg-slate-900 text-white hover:bg-slate-800 h-9 px-5">
                                 Começar Grátis
                             </Button>
@@ -54,7 +55,7 @@ export default function LandingPage() {
                                 O <span className="font-semibold text-slate-900">Doqs</span> automatiza a análise documental com o rigor e a sofisticação que seu escritório exige.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center gap-6">
-                                <Link href="/login" className="w-full sm:w-auto">
+                                <Link href="/signup" className="w-full sm:w-auto">
                                     <Button className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 h-14 px-10 text-xl font-bold shadow-xl transition-transform hover:scale-105">
                                         Começar Agora
                                     </Button>
@@ -74,10 +75,13 @@ export default function LandingPage() {
                             <div className="absolute -inset-4 bg-emerald-500/10 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                             
                             <div className="relative bg-white rounded-2xl shadow-xl border border-gray-200 p-0.5 aspect-[3/2] md:aspect-[16/10] overflow-hidden group transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)]">
-                                <img 
+                                <Image 
                                     src="/dashboard-preview.png" 
                                     alt="Doqs Dashboard"
+                                    width={800}
+                                    height={500}
                                     className="w-full h-full object-cover object-center"
+                                    priority
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
                             </div>
@@ -137,6 +141,14 @@ export default function LandingPage() {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                            
+                            <div className="mt-12">
+                                <Link href="/signup">
+                                    <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 px-8">
+                                        Experimentar na Prática &rarr;
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -217,9 +229,9 @@ export default function LandingPage() {
                             Pronto para dar escala ao seu escritório?
                         </h2>
                         <p className="text-slate-500 mb-10 text-lg">
-                            Junte-se a advogados que já automatizaram o rito de análise documental com o Luka.
+                            Junte-se a advogados que já automatizaram o rito de análise documental com o Doqs.
                         </p>
-                        <Link href="/login">
+                        <Link href="/signup">
                             <Button className="bg-slate-900 text-white hover:bg-slate-800 h-14 px-10 text-xl shadow-2xl">
                                 Começar Gratuitamente
                             </Button>
@@ -227,6 +239,41 @@ export default function LandingPage() {
                     </div>
                 </section>
             </main>
+
+            {/* Robustness & Compliance Trust Widget */}
+            <div className="bg-slate-50 border-y border-gray-100 py-12">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                        <div className="text-center lg:text-left">
+                            <h4 className="text-lg font-serif font-medium text-slate-900 mb-1 flex items-center justify-center lg:justify-start gap-2">
+                                <ShieldCheck className="h-5 w-5 text-emerald-600 animate-pulse" />
+                                Robustez & Garantia de Privacidade
+                            </h4>
+                            <p className="text-sm text-slate-500 max-w-xl">
+                                Seus dados estão protegidos sob protocolos rígidos de segurança, com tráfego 100% criptografado e conformidade integral à LGPD.
+                            </p>
+                        </div>
+                        
+                        <div className="flex flex-wrap justify-center gap-4">
+                            {[
+                                { label: "SSL/TLS", value: "Grade A+", status: "Ativo" },
+                                { label: "Criptografia", value: "AES-256", status: "Bancário" },
+                                { label: "Conformidade", value: "LGPD/GDPR", status: "100%" },
+                                { label: "Servidor OCI", value: "São Paulo", status: "Uptime 99.9%" }
+                            ].map((stat, i) => (
+                                <div key={i} className="bg-white border border-gray-200 rounded-xl px-4 py-3 min-w-[140px] text-center shadow-sm">
+                                    <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">{stat.label}</div>
+                                    <div className="text-base font-bold text-slate-800 leading-none mb-1">{stat.value}</div>
+                                    <div className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter flex items-center justify-center gap-1">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        {stat.status}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Footer */}
             <footer className="py-16 border-t border-gray-100 bg-white">

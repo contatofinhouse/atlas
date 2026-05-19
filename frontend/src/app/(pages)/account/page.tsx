@@ -80,7 +80,7 @@ export default function AccountPage() {
         if (!profile?.stripeCustomerId) return;
         setIsManagingSubscription(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/stripe/create-portal-session`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001"}/stripe/create-portal-session`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

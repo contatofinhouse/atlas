@@ -39,7 +39,7 @@ export function UpgradeModal({ isOpen, onClose }: Props) {
         setError(null);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/stripe/create-checkout-session`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001"}/stripe/create-checkout-session`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

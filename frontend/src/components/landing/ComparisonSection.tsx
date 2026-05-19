@@ -79,6 +79,14 @@ export function ComparisonSection() {
                         </tbody>
                     </table>
                 </div>
+                
+                <div className="mt-12 text-center">
+                    <a href="/signup">
+                        <button className="bg-slate-900 text-white hover:bg-slate-800 h-11 px-8 rounded-md text-sm font-medium shadow-sm transition-colors">
+                            Veja na prática &mdash; Comece grátis
+                        </button>
+                    </a>
+                </div>
             </div>
         </section>
     );
