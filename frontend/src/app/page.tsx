@@ -8,17 +8,30 @@ import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { ShieldCheck, Zap, FolderSearch, Users, Lock, Server } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function LandingPage() {
     const { isAuthenticated } = useAuth();
+    const router = useRouter();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            redirect("/assistant");
+        // Verificar se é um link de recuperação de senha vindo do e-mail
+        if (typeof window !== "undefined") {
+            const hash = window.location.hash;
+            const searchParams = new URLSearchParams(window.location.search);
+            
+            if (hash.includes("type=recovery") || hash.includes("recovery") || searchParams.get("type") === "recovery") {
+                // Redireciona imediatamente para a página de redefinir senha preservando o token no hash
+                router.replace(`/reset-password${hash}`);
+                return;
+            }
         }
-    }, [isAuthenticated]);
+
+        if (isAuthenticated) {
+            router.replace("/assistant");
+        }
+    }, [isAuthenticated, router]);
 
     return (
         <div className="min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden">
