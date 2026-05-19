@@ -5,31 +5,31 @@ import { Check, X } from "lucide-react";
 const COMPARISON_DATA = [
     {
         feature: "Contexto de Projetos (Pastas)",
-        luka: true,
+        doqs: true,
         generic: false,
         description: "O Doqs mantém o contexto de todos os arquivos de um caso simultaneamente.",
     },
     {
         feature: "Extração Tabular em Lote",
-        luca: true,
+        doqs: true,
         generic: false,
         description: "Processe 50+ documentos de uma vez e exporte para Excel estruturado.",
     },
     {
         feature: "Workflows Jurídicos Fixos",
-        luca: true,
+        doqs: true,
         generic: false,
         description: "Garantia de que o processo de análise segue o rito do seu escritório.",
     },
     {
         feature: "Soberania de Dados (Brasil)",
-        luca: true,
+        doqs: true,
         generic: false,
         description: "Seus dados são processados e armazenados em servidores locais.",
     },
     {
         feature: "Controle de Versões",
-        luca: true,
+        doqs: true,
         generic: false,
         description: "Histórico claro de revisões e alterações em documentos Word.",
     },

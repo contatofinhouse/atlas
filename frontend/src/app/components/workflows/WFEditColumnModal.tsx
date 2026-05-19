@@ -279,7 +279,7 @@ export function WFEditColumnModal({ column, onClose, onSave, onDelete }: Props) 
                             rows={6}
                             value={draft.prompt}
                             onChange={(e) => update({ prompt: e.target.value })}
-                            placeholder="Escreva o prompt da análise — descreva o que o Mike deve extrair de cada documento para esta coluna…"
+                            placeholder="Escreva o prompt da análise — descreva o que o Doqs deve extrair de cada documento para esta coluna…"
                             className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:border-gray-400 focus:outline-none bg-transparent resize-none leading-relaxed"
                         />
                     </div>

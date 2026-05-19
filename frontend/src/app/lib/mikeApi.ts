@@ -361,12 +361,27 @@ export async function createChat(payload?: {
     });
 }
 
+function cleanChatTitle(chat: MikeChat): MikeChat {
+    if (chat && chat.title) {
+        return {
+            ...chat,
+            title: chat.title
+                .replace(/\bLuka\b/gi, "Doqs")
+                .replace(/\bLukaLex\b/gi, "Doqs")
+                .replace(/\bLuka-Lex\b/gi, "Doqs"),
+        };
+    }
+    return chat;
+}
+
 export async function listChats(): Promise<MikeChat[]> {
-    return apiRequest<MikeChat[]>("/chat");
+    const list = await apiRequest<MikeChat[]>("/chat");
+    return list.map(cleanChatTitle);
 }
 
 export async function listProjectChats(projectId: string): Promise<MikeChat[]> {
-    return apiRequest<MikeChat[]>(`/projects/${projectId}/chats`);
+    const list = await apiRequest<MikeChat[]>(`/projects/${projectId}/chats`);
+    return list.map(cleanChatTitle);
 }
 
 export async function getChat(chatId: string): Promise<MikeChatDetailOut> {
@@ -394,7 +409,7 @@ export async function getChat(chatId: string): Promise<MikeChatDetailOut> {
             events,
         };
     });
-    return { chat: raw.chat, messages };
+    return { chat: cleanChatTitle(raw.chat), messages };
 }
 
 export async function renameChat(chatId: string, title: string): Promise<void> {

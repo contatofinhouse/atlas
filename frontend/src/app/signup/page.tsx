@@ -38,15 +38,21 @@ function SignupForm() {
         setLoading(true);
         setError(null);
 
+        if (plan === "pro") {
+            setIsRedirectingCheckout(true);
+        }
+
         if (password !== confirmPassword) {
             setError("As senhas não coincidem");
             setLoading(false);
+            setIsRedirectingCheckout(false);
             return;
         }
 
         if (password.length < 6) {
             setError("A senha deve ter pelo menos 6 caracteres");
             setLoading(false);
+            setIsRedirectingCheckout(false);
             return;
         }
 
@@ -82,7 +88,6 @@ function SignupForm() {
 
             // Auto-redirect to Stripe if plan=pro
             if (plan === "pro" && user) {
-                setIsRedirectingCheckout(true);
                 let priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY;
                 if (cycle === "quarterly") priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_QUARTERLY;
                 if (cycle === "semiannual") priceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_SEMIANNUAL;
@@ -103,16 +108,19 @@ function SignupForm() {
                     return; // Prevent normal flow
                 } else {
                     console.error("Failed to create checkout session", checkoutData);
+                    setIsRedirectingCheckout(false);
                     // Fallback to normal success flow
                 }
             }
 
             setSuccess(true);
+            setIsRedirectingCheckout(false);
             setTimeout(() => {
                 router.push("/assistant");
             }, 2000);
         } catch (error: any) {
             setError(error.message || "Ocorreu um erro durante o cadastro");
+            setIsRedirectingCheckout(false);
         } finally {
             if (!isRedirectingCheckout) {
                 setLoading(false);

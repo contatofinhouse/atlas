@@ -18,15 +18,41 @@ export default function ResetPasswordPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [isExchanging, setIsExchanging] = useState(() => {
+        if (typeof window !== "undefined") {
+            const searchParams = new URLSearchParams(window.location.search);
+            return !!searchParams.get("code");
+        }
+        return false;
+    });
+
+    useEffect(() => {
+        const exchangeCode = async () => {
+            if (typeof window !== "undefined") {
+                const searchParams = new URLSearchParams(window.location.search);
+                const code = searchParams.get("code");
+                if (code) {
+                    try {
+                        await supabase.auth.exchangeCodeForSession(code);
+                    } catch (e) {
+                        console.error("Error exchanging code for session:", e);
+                    } finally {
+                        setIsExchanging(false);
+                    }
+                }
+            }
+        };
+        exchangeCode();
+    }, []);
 
     // If they land here without a recovery session (e.g., they just typed /reset-password)
     // we should ideally redirect them if not authenticated, but since Supabase needs time to parse the hash,
-    // we wait until authLoading is false.
+    // we wait until authLoading is false and isExchanging is false.
     useEffect(() => {
-        if (!authLoading && !isAuthenticated && !success) {
+        if (!authLoading && !isExchanging && !isAuthenticated && !success) {
             router.replace("/login");
         }
-    }, [authLoading, isAuthenticated, router, success]);
+    }, [authLoading, isExchanging, isAuthenticated, router, success]);
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault();

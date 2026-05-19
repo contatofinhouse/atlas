@@ -17,6 +17,7 @@ content = content.replace(/title: "Commercial Lease Review"/g, 'title: "Revisão
 content = content.replace(/title: "Limited Partnership Agreement Review"/g, 'title: "Revisão de Contrato de Sociedade Limitada (LPA)"');
 content = content.replace(/title: "Shareholder Agreement Summary"/g, 'title: "Resumo de Acordo de Acionistas"');
 content = content.replace(/title: "Shareholder Agreement Review"/g, 'title: "Revisão de Acordo de Acionistas"');
+content = content.replace(/title: "Employment Agreement Review"/g, 'title: "Revisão de Contrato de Trabalho"');
 
 // Replace practices
 content = content.replace(/practice: "General Transactions"/g, 'practice: "Transações Gerais"');
@@ -25,10 +26,11 @@ content = content.replace(/practice: "Finance"/g, 'practice: "Financeiro"');
 content = content.replace(/practice: "Litigation"/g, 'practice: "Contencioso"');
 content = content.replace(/practice: "Real Estate"/g, 'practice: "Imobiliário"');
 content = content.replace(/practice: "Private Equity"/g, 'practice: "Private Equity"');
+content = content.replace(/practice: "Employment"/g, 'practice: "Trabalhista"');
 
 // Append translation instructions to prompt_md (but only if it's not already appended to avoid double appending)
 // We look for a prompt_md string that doesn't already contain our appended text.
-content = content.replace(/(prompt_md:\s*[\s\S]*?)",\n/g, (match, p1) => {
+content = content.replace(/(prompt_md:\s*"[\s\S]*?)",\r?\n/g, (match, p1) => {
     if (p1.includes('IMPORTANTE: Responda sempre em português brasileiro.')) {
         return match;
     }
@@ -36,7 +38,7 @@ content = content.replace(/(prompt_md:\s*[\s\S]*?)",\n/g, (match, p1) => {
 });
 
 // Append translation instructions to individual column prompts
-content = content.replace(/(prompt:\s*".*?)",\n/g, (match, p1) => {
+content = content.replace(/(prompt:\s*".*?)",\r?\n/g, (match, p1) => {
     if (p1.includes('IMPORTANTE: Responda sempre em português brasileiro.')) {
         return match;
     }
