@@ -13,7 +13,7 @@ export default function GuiaIAPage() {
                     <Link href="/" className="text-slate-500 hover:text-slate-900 transition-colors">
                         <ChevronLeft className="h-5 w-5" />
                     </Link>
-                    <span className="font-serif text-xl text-slate-900 font-medium">LukaLex Insights</span>
+                    <span className="font-serif text-xl text-slate-900 font-medium">Doqs Insights</span>
                 </div>
             </nav>
 
@@ -38,7 +38,7 @@ export default function GuiaIAPage() {
                             Muitos advogados começam pelo ChatGPT ou outras ferramentas genéricas. Embora impressionantes, elas possuem uma falha crítica para o Direito: a **amnésia contextual**. No momento em que você sobe o décimo documento ou o chat fica longo, a IA começa a "alucinar" ou esquecer detalhes do início do processo.
                         </p>
                         <p>
-                            Uma IA Vertical como o LukaLex é projetada para manter o contexto vivo em **Projetos**. Ela não lê apenas um arquivo; ela entende o caso completo, cruzando dados entre petições, sentenças e provas de forma persistente.
+                            Uma IA Vertical como o Doqs é projetada para manter o contexto vivo em **Projetos**. Ela não lê apenas um arquivo; ela entende o caso completo, cruzando dados entre petições, sentenças e provas de forma persistente.
                         </p>
                     </section>
 
@@ -54,7 +54,7 @@ export default function GuiaIAPage() {
                             A IA permite a padronização absoluta através de Modelos de Análise.
                         </p>
                         <p>
-                            Ao criar um modelo no LukaLex, você define exatamente o que deve ser conferido em cada contrato ou processo. Isso transforma o rito de análise em um processo industrial de alta precisão. O resultado é o mesmo, seja o advogado com 20 anos de casa ou um estagiário operando a ferramenta.
+                            Ao criar um modelo no Doqs, você define exatamente o que deve ser conferido em cada contrato ou processo. Isso transforma o rito de análise em um processo industrial de alta precisão. O resultado é o mesmo, seja o advogado com 20 anos de casa ou um estagiário operando a ferramenta.
                         </p>
                     </section>
 
@@ -73,7 +73,7 @@ export default function GuiaIAPage() {
                     <section className="border-t border-slate-100 pt-12">
                         <h2 className="text-3xl font-serif text-slate-900 mb-4">4. Segurança e LGPD</h2>
                         <p>
-                            Para escritórios de advocacia, a segurança não é opcional. Certifique-se de que a ferramenta escolhida não utilize seus dados para treinar modelos públicos. No LukaLex, seus dados são criptografados e isolados, garantindo o sigilo profissional exigido pela OAB e pela LGPD.
+                            Para escritórios de advocacia, a segurança não é opcional. Certifique-se de que a ferramenta escolhida não utilize seus dados para treinar modelos públicos. No Doqs, seus dados são criptografados e isolados, garantindo o sigilo profissional exigido pela OAB e pela LGPD.
                         </p>
                     </section>
                 </div>
@@ -81,7 +81,7 @@ export default function GuiaIAPage() {
                 <footer className="mt-20 p-12 bg-slate-900 rounded-[2.5rem] text-center text-white">
                     <h3 className="text-3xl font-serif mb-6">Pronto para padronizar sua operação?</h3>
                     <p className="text-slate-400 mb-10 max-w-xl mx-auto">
-                        Comece hoje mesmo a transformar seu escritório em uma operação de escala com o LukaLex.
+                        Comece hoje mesmo a transformar seu escritório em uma operação de escala com o Doqs.
                     </p>
                     <Link href="/login">
                         <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 h-14 px-10 text-xl font-bold">

@@ -276,7 +276,7 @@ export function useAssistantChat({
                 setNewChatMessages(msgs);
 
                 // 3. Rename and Navigate
-                await renameChat(cid, "Como usar o LukaLex");
+                await renameChat(cid, "Como usar o Doqs");
                 router.push(`/assistant/chat/${cid}`);
             }
         } catch (err) {
@@ -402,7 +402,7 @@ export function useAssistantChat({
                             updated[updated.length - 1] = {
                                 ...last,
                                 content:
-                                    "Você atingiu o limite de mensagens do plano gratuito. Faça upgrade para continuar utilizando o LukaLex sem restrições.",
+                                    "Você atingiu o limite de mensagens do plano gratuito. Faça upgrade para continuar utilizando o Doqs sem restrições.",
                                 error: "Limite atingido",
                             };
                         }

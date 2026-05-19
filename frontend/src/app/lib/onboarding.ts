@@ -14,7 +14,7 @@ Aqui está como você pode extrair o máximo da nossa inteligência jurídica:
 Comece criando um **Projeto** para cada caso ou cliente. Isso mantém seus documentos, chats e análises organizados em um só lugar.
 
 2. **Suba seus Arquivos** 📄
-Aceitamos **PDF e Word**. O Luka processa e converte tudo automaticamente para que você possa ler, pesquisar e analisar na hora, com citações diretas do texto.
+Aceitamos **PDF e Word**. O Doqs processa e converte tudo automaticamente para que você possa ler, pesquisar e analisar na hora, com citações diretas do texto.
 
 3. **Analise com o Assistente** 💬
 Abra um chat dentro do projeto para fazer perguntas complexas:
@@ -23,11 +23,11 @@ Abra um chat dentro do projeto para fazer perguntas complexas:
 * *"Encontre contradições entre estes dois arquivos"*
 
 4. **Análise Tabular** 📊
-Use a **Análise Tabular** para comparar múltiplos documentos de uma vez. Defina colunas específicas (como "Data de Validade", "Foro", "Valor da Multa") e o Luka preencherá a tabela automaticamente para você.
+Use a **Análise Tabular** para comparar múltiplos documentos de uma vez. Defina colunas específicas (como "Data de Validade", "Foro", "Valor da Multa") e o Doqs preencherá a tabela automaticamente para você.
 
 5. **Modelos de Análise (Workflows)** 🛠️
 Use nossos modelos pré-definidos para garantir que todas as suas revisões sigam o mesmo padrão de qualidade e rigor jurídico.
 
-**Dica:** Você pode clicar em qualquer citação nas respostas do Luka para abrir o documento exatamente na página e parágrafo mencionado!`,
+**Dica:** Você pode clicar em qualquer citação nas respostas do Doqs para abrir o documento exatamente na página e parágrafo mencionado!`,
     },
 ];
