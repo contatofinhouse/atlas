@@ -62,7 +62,7 @@ Toda a transição de domínio e provisionamento de certificados seguros de crip
 
 ---
 
-## 4. Transição do Stripe para Produção (Roadmap Futuro)
+## 4. Transição do Stripe para Produção (100% Pronto para Chaveamento)
 
 Para tombar o sistema de pagamentos de **Testes** para **Produção Real**, siga estes passos quando o domínio estiver no ar:
 
